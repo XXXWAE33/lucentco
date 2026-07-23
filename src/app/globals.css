@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Semantic color tokens — HSL channels (used as hsl(var(--x) / alpha)) */
+    --canvas: 100 24% 99%;
+    --background: 100 24% 99%;
+    --foreground: 150 6% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 6% 18%;
+
+    --primary: 134 23% 32%; /* sage */
+    --primary-foreground: 150 50% 98%;
+
+    --accent: 147 84% 39%; /* emerald */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 130 16% 92%;
+    --muted-foreground: 145 6% 40%;
+
+    --border: 135 12% 87%;
+    --ring: 147 84% 39%;
+
+    /* Motion */
+    --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    @apply bg-accent/20 text-sage-900;
+  }
+
+  /* Visible, on-brand focus states for keyboard users */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Eyebrow label used above section headings */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-eyebrow font-semibold uppercase text-accent;
+  }
+
+  /* Soft gradient text for emphasis words */
+  .text-gradient {
+    @apply bg-gradient-to-br from-sage-700 via-mint-600 to-accent bg-clip-text text-transparent;
+  }
+
+  /* Frosted card surface */
+  .surface {
+    @apply rounded-3xl border border-border bg-card shadow-card;
+  }
+
+  /* Skeleton shimmer (used for lazy media / image fallbacks) */
+  .skeleton {
+    @apply relative overflow-hidden bg-muted;
+  }
+  .skeleton::after {
+    @apply absolute inset-0 -translate-x-full animate-shimmer;
+    content: "";
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(0 0% 100% / 0.55),
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Standard section vertical rhythm */
+  .section-y {
+    @apply py-section;
+  }
+
+  /* Soft radial brand wash for section backgrounds */
+  .bg-eco-wash {
+    background:
+      radial-gradient(60% 50% at 15% 0%, hsl(147 84% 39% / 0.06), transparent 70%),
+      radial-gradient(50% 60% at 100% 20%, hsl(134 40% 50% / 0.07), transparent 70%);
+  }
+}
