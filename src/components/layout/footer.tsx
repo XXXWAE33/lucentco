@@ -3,13 +3,15 @@ import { Phone, Mail, MapPin, Instagram, Facebook, Leaf } from "lucide-react";
 import { Logo } from "./logo";
 import { Container } from "@/components/ui";
 import { site, serviceSuburbs, navLinks } from "@/lib/site";
+import { CallLink, WhatsAppLink, WhatsAppIcon } from "./contact-link";
 
 const serviceLinks = [
-  { label: "Residential cleaning", href: "/services#residential" },
-  { label: "End of lease & bond", href: "/services#end-of-lease" },
-  { label: "Carpet & upholstery", href: "/services#specialty" },
-  { label: "Commercial & office", href: "/services#commercial" },
-  { label: "Airbnb turnover", href: "/services#commercial" },
+  { label: "Carpet cleaning", href: "/pricing#carpet" },
+  { label: "Couch cleaning", href: "/pricing#couch" },
+  { label: "Mattress cleaning", href: "/pricing#mattress" },
+  { label: "Curtain cleaning", href: "/pricing#curtain" },
+  { label: "Blind cleaning", href: "/pricing#blind" },
+  { label: "Flood & water extraction", href: "/pricing#flood-damage" },
 ];
 
 export function Footer() {
@@ -21,22 +23,22 @@ export function Footer() {
           <div className="space-y-5">
             <Logo tone="light" />
             <p className="max-w-xs text-pretty text-sm leading-relaxed text-mint-200/80">
-              Premium, eco-friendly cleaning for Brisbane homes and businesses —
-              non-toxic products, vetted local cleaners, and a finish you can
-              feel.
+              Specialist carpet, upholstery, mattress and curtain care for
+              Brisbane homes — non-toxic products, careful local technicians,
+              and fixed prices you can check before you call.
             </p>
             <div className="flex items-center gap-3">
               <a
                 href={site.socials.instagram}
                 aria-label="Lucent Clean Co. on Instagram"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-sage-800 text-mint-100 transition-colors hover:bg-emerald-600 hover:text-white"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-sage-800 text-mint-100 transition-colors hover:bg-emerald-600 hover:text-white"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
                 href={site.socials.facebook}
                 aria-label="Lucent Clean Co. on Facebook"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-sage-800 text-mint-100 transition-colors hover:bg-emerald-600 hover:text-white"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-sage-800 text-mint-100 transition-colors hover:bg-emerald-600 hover:text-white"
               >
                 <Facebook className="h-5 w-5" />
               </a>
@@ -53,7 +55,7 @@ export function Footer() {
                 <li key={l.label}>
                   <Link
                     href={l.href}
-                    className="text-mint-100/85 transition-colors hover:text-white"
+                    className="inline-flex min-h-[44px] items-center text-mint-100/85 transition-colors hover:text-white lg:min-h-0"
                   >
                     {l.label}
                   </Link>
@@ -72,7 +74,7 @@ export function Footer() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-mint-100/85 transition-colors hover:text-white"
+                    className="inline-flex min-h-[44px] items-center text-mint-100/85 transition-colors hover:text-white lg:min-h-0"
                   >
                     {l.label}
                   </Link>
@@ -81,7 +83,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-mint-100/85 transition-colors hover:text-white"
+                  className="inline-flex min-h-[44px] items-center text-mint-100/85 transition-colors hover:text-white lg:min-h-0"
                 >
                   Book a clean
                 </Link>
@@ -96,18 +98,37 @@ export function Footer() {
             </h2>
             <ul className="space-y-3 text-sm">
               <li>
-                <a
-                  href={site.phoneHref}
-                  className="inline-flex items-center gap-3 text-mint-100/85 transition-colors hover:text-white"
+                <CallLink
+                  location="footer"
+                  showIcon={false}
+                  className="inline-flex min-h-[44px] items-center gap-3 text-mint-100/85 transition-colors hover:text-white lg:min-h-0"
                 >
                   <Phone className="h-4 w-4 shrink-0 text-emerald-400" />
-                  {site.phone}
-                </a>
+                  <span>
+                    {site.phone}
+                    <span className="ml-2 text-xs text-mint-200/50">Call</span>
+                  </span>
+                </CallLink>
+              </li>
+              <li>
+                <WhatsAppLink
+                  location="footer"
+                  showIcon={false}
+                  className="inline-flex min-h-[44px] items-center gap-3 text-mint-100/85 transition-colors hover:text-white lg:min-h-0"
+                >
+                  <WhatsAppIcon className="h-4 w-4 shrink-0 text-emerald-400" />
+                  <span>
+                    {site.whatsapp}
+                    <span className="ml-2 text-xs text-mint-200/50">
+                      WhatsApp
+                    </span>
+                  </span>
+                </WhatsAppLink>
               </li>
               <li>
                 <a
                   href={`mailto:${site.email}`}
-                  className="inline-flex items-center gap-3 text-mint-100/85 transition-colors hover:text-white"
+                  className="inline-flex min-h-[44px] items-center gap-3 text-mint-100/85 transition-colors hover:text-white lg:min-h-0"
                 >
                   <Mail className="h-4 w-4 shrink-0 text-emerald-400" />
                   {site.email}
@@ -145,10 +166,10 @@ export function Footer() {
             reserved.
           </p>
           <div className="flex items-center gap-5">
-            <Link href="/privacy" className="transition-colors hover:text-white">
+            <Link href="/privacy" className="inline-flex min-h-[44px] items-center transition-colors hover:text-white lg:min-h-0">
               Privacy
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-white">
+            <Link href="/terms" className="inline-flex min-h-[44px] items-center transition-colors hover:text-white lg:min-h-0">
               Terms
             </Link>
           </div>

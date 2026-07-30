@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Phone, Mail, MapPin, Clock, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui";
 import { ContactForm } from "@/components/features";
+import { CallLink, WhatsAppLink, WhatsAppIcon } from "@/components/layout";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -11,13 +13,18 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-const details = [
+/** Contact channels get tracked links; the rest are plain info rows. */
+const channels = [
+  { kind: "call" as const, icon: Phone, label: "Call us", value: site.phone },
   {
-    icon: Phone,
-    label: "Call us",
-    value: site.phone,
-    href: site.phoneHref,
+    kind: "whatsapp" as const,
+    icon: WhatsAppIcon,
+    label: "WhatsApp",
+    value: site.whatsapp,
   },
+];
+
+const details = [
   {
     icon: Mail,
     label: "Email",
@@ -38,7 +45,7 @@ const details = [
 
 export default function ContactPage() {
   return (
-    <main className="bg-eco-wash pt-16 lg:pt-18">
+    <main className="bg-eco-wash pt-chrome">
       <Container className="section-y">
         <div className="mx-auto max-w-2xl text-center">
           <span className="eyebrow justify-center">
@@ -57,6 +64,43 @@ export default function ContactPage() {
         <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:gap-12">
           {/* Details */}
           <div className="space-y-4">
+            {channels.map((c) => {
+              const inner = (
+                <div className="flex items-start gap-4 rounded-3xl border border-border bg-card p-5 shadow-soft transition-shadow hover:shadow-card">
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                    <c.icon className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {c.label}
+                    </p>
+                    <p className="mt-0.5 font-medium text-foreground">
+                      {c.value}
+                    </p>
+                  </div>
+                </div>
+              );
+              return c.kind === "call" ? (
+                <CallLink
+                  key={c.label}
+                  location="contact-page"
+                  showIcon={false}
+                  className="block"
+                >
+                  {inner}
+                </CallLink>
+              ) : (
+                <WhatsAppLink
+                  key={c.label}
+                  location="contact-page"
+                  showIcon={false}
+                  className="block"
+                >
+                  {inner}
+                </WhatsAppLink>
+              );
+            })}
+
             {details.map((d) => {
               const content = (
                 <div className="flex items-start gap-4 rounded-3xl border border-border bg-card p-5 shadow-soft transition-shadow hover:shadow-card">
@@ -96,8 +140,14 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Form */}
-          <ContactForm />
+          {/* Form — Suspense required: the form reads prefill params from the URL. */}
+          <Suspense
+            fallback={
+              <div className="min-h-[32rem] rounded-3xl border border-border bg-card shadow-card" />
+            }
+          >
+            <ContactForm />
+          </Suspense>
         </div>
       </Container>
     </main>

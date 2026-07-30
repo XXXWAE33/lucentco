@@ -1,331 +1,412 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  CookingPot,
-  Sofa,
-  UtensilsCrossed,
-  BedDouble,
-  Bath,
-  Briefcase,
-  WashingMachine,
-  DoorOpen,
-  Plus,
-  Minus,
-  Check,
-  Calendar,
   ArrowRight,
-  type LucideIcon,
+  Calendar,
+  Check,
+  Info,
+  Layers,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { cn, formatAud } from "@/lib/utils";
+import { whatsappBasketMessage } from "@/lib/site";
 import {
-  roomTypes,
-  buildExtras,
-  frequencyOptions,
-  initialBuildState,
-  estimateBuild,
-  type BuildState,
-  type RoomType,
-} from "@/lib/configurator";
+  WhatsAppLink,
+  WhatsAppIcon,
+  darkContactPillClass,
+} from "@/components/layout";
+import {
+  calculateBasket,
+  services,
+  type ServiceDef,
+  type ServiceId,
+  type ServiceSelection,
+} from "@/config/pricing";
+import { QuantityStepper } from "./service-pricing/quantity-stepper";
+import { serviceIcons } from "./service-showcase/service-icons";
 
-const roomIcons: Record<string, LucideIcon> = {
-  kitchen: CookingPot,
-  living: Sofa,
-  dining: UtensilsCrossed,
-  bedroom: BedDouble,
-  bathroom: Bath,
-  study: Briefcase,
-  laundry: WashingMachine,
-  hallway: DoorOpen,
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+type RowState = {
+  enabled: boolean;
+  modeId: string;
+  quantity: number;
+  sizes: Record<string, number>;
 };
 
+function initialRows(): Record<ServiceId, RowState> {
+  const rows = {} as Record<ServiceId, RowState>;
+  for (const service of services) {
+    const pricing = service.modes[0].pricing;
+    rows[service.id] = {
+      enabled: false,
+      modeId: service.modes[0].id,
+      quantity:
+        pricing.kind === "tiered"
+          ? (pricing.tiers[0]?.qty ?? 1)
+          : pricing.kind === "flat" || pricing.kind === "per-unit"
+            ? pricing.minQty
+            : 1,
+      sizes: pricing.kind === "sized" ? { queen: 1 } : {},
+    };
+  }
+  // Lead with the most common combination rather than an empty basket.
+  rows.carpet.enabled = true;
+  rows.carpet.quantity = 2;
+  return rows;
+}
+
+/**
+ * Multi-service basket. Add several services and see one combined total —
+ * every figure comes from `calculateBasket`, the same engine the AI quote uses.
+ */
 export function BuildYourClean() {
-  const [state, setState] = useState<BuildState>(initialBuildState);
-  const estimate = useMemo(() => estimateBuild(state), [state]);
+  const reduce = useReducedMotion();
+  const [rows, setRows] = useState<Record<ServiceId, RowState>>(initialRows);
 
-  const setRoom = (id: string, qty: number) =>
-    setState((s) => ({ ...s, rooms: { ...s.rooms, [id]: qty } }));
+  /*
+   * Mobile sticky total. The running number follows the user while they add
+   * items, then retires once the real summary card scrolls into view — so it
+   * is never showing the same figure twice. `MobileQuoteBar` stands down while
+   * this section is on screen (see `useMobileCtaBarVisible`), so only one bar
+   * is ever pinned to the bottom.
+   */
+  const rootRef = useRef<HTMLDivElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const [inSection, setInSection] = useState(false);
+  const [summaryVisible, setSummaryVisible] = useState(false);
 
-  const toggleExtra = (id: string) =>
-    setState((s) => ({
-      ...s,
-      extras: s.extras.includes(id)
-        ? s.extras.filter((x) => x !== id)
-        : [...s.extras, id],
-    }));
+  useEffect(() => {
+    const observe = (
+      el: Element | null,
+      set: (v: boolean) => void,
+      margin: string,
+    ) => {
+      if (!el) return () => {};
+      const io = new IntersectionObserver(
+        ([entry]) => set(entry.isIntersecting),
+        { rootMargin: margin },
+      );
+      io.observe(el);
+      return () => io.disconnect();
+    };
+    const a = observe(rootRef.current, setInSection, "0px 0px -20% 0px");
+    const b = observe(summaryRef.current, setSummaryVisible, "0px 0px -30% 0px");
+    return () => {
+      a();
+      b();
+    };
+  }, []);
+
+  const update = (id: ServiceId, patch: Partial<RowState>) =>
+    setRows((r) => ({ ...r, [id]: { ...r[id], ...patch } }));
+
+  const selections: ServiceSelection[] = useMemo(
+    () =>
+      services
+        .filter((s) => rows[s.id].enabled)
+        .map((s) => ({
+          serviceId: s.id,
+          modeId: rows[s.id].modeId,
+          quantity: rows[s.id].quantity,
+          sizes: rows[s.id].sizes,
+        })),
+    [rows],
+  );
+
+  const basket = useMemo(() => calculateBasket(selections), [selections]);
+  const activeCount = selections.length;
+
+  const summary = basket.lines.map((l) => `${l.label}`).join(", ");
+  const contactHref = `/contact?service=${encodeURIComponent(
+    activeCount === 1 ? basket.items[0].serviceName : "Multiple services",
+  )}${summary ? `&details=${encodeURIComponent(summary)}` : ""}`;
 
   return (
-    <div className="grid gap-6 overflow-hidden rounded-4xl border border-border bg-card p-5 shadow-lifted sm:p-7 lg:grid-cols-[1.1fr_0.9fr]">
-      {/* Animated house illustration */}
-      <div className="rounded-3xl bg-gradient-to-br from-sage-50 to-mint-50 p-5 sm:p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <p className="font-display text-sm font-semibold text-foreground">
-            Your home
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {estimate.roomCount} {estimate.roomCount === 1 ? "room" : "rooms"}{" "}
-            selected
-          </p>
-        </div>
-
-        {/* Roof */}
-        <svg
-          viewBox="0 0 100 14"
-          preserveAspectRatio="none"
-          className="h-8 w-full text-sage-700"
-          aria-hidden="true"
-        >
-          <path d="M2 14 L50 1 L98 14 Z" fill="currentColor" />
-        </svg>
-
-        {/* House body — grid of room tiles */}
-        <div className="grid grid-cols-2 gap-2.5 rounded-b-2xl border-x-2 border-b-2 border-sage-700/70 bg-white/40 p-2.5 sm:grid-cols-3">
-          {roomTypes.map((room) => (
-            <RoomTile
-              key={room.id}
-              room={room}
-              qty={state.rooms[room.id] ?? 0}
-              onChange={(q) => setRoom(room.id, q)}
-            />
-          ))}
-        </div>
-        <p className="mt-3 text-center text-xs text-muted-foreground">
-          Tap a room to add it · use −/+ for bedrooms &amp; bathrooms
-        </p>
+    <>
+    <div
+      ref={rootRef}
+      className="grid gap-5 rounded-3xl border border-border bg-card p-4 shadow-lifted sm:gap-6 sm:rounded-4xl sm:p-7 lg:grid-cols-[1.15fr_0.85fr]"
+    >
+      {/* Service picker */}
+      <div className="space-y-3">
+        {services.map((service) => (
+          <BasketRow
+            key={service.id}
+            service={service}
+            row={rows[service.id]}
+            onChange={(patch) => update(service.id, patch)}
+          />
+        ))}
       </div>
 
-      {/* Controls + live price */}
+      {/* Live total */}
       <div className="flex flex-col">
-        {/* Frequency */}
-        <div>
-          <p className="mb-2 text-sm font-medium text-foreground">How often?</p>
-          <div className="grid grid-cols-2 gap-2">
-            {frequencyOptions.map((f) => {
-              const active = state.frequency === f.id;
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setState((s) => ({ ...s, frequency: f.id }))}
-                  aria-pressed={active}
-                  className={cn(
-                    "rounded-2xl border px-3 py-2.5 text-left transition-all",
-                    active
-                      ? "border-accent bg-accent/5 shadow-soft"
-                      : "border-border hover:border-sage-300 hover:bg-sage-50/50",
-                  )}
-                >
-                  <span className="block text-sm font-medium text-foreground">
-                    {f.label}
+        <div className="rounded-3xl border border-border bg-sage-50/70 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Your quote
+          </p>
+
+          {basket.lines.length > 0 ? (
+            <ul className="mt-3 space-y-2 text-sm">
+              {basket.lines.map((line, i) => (
+                <li key={i} className="flex items-start justify-between gap-3">
+                  <span className="text-ink-700">{line.label}</span>
+                  <span className="shrink-0 font-medium tabular-nums text-foreground">
+                    {formatAud(line.amount)}
                   </span>
-                  <span className="block text-xs text-emerald-700">{f.note}</span>
-                </button>
-              );
-            })}
-          </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Add a service to build your quote.
+            </p>
+          )}
+
+          {basket.requiresInspection && (
+            <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-sage-200 bg-white/70 p-3">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+              <p className="text-xs text-ink-700">
+                {basket.inspectionItems
+                  .map((i) => i.serviceName)
+                  .join(" and ")}{" "}
+                {basket.inspectionItems.length === 1 ? "is" : "are"} quoted after
+                inspection, so {basket.inspectionItems.length === 1 ? "it is" : "they are"}{" "}
+                not included in this total.
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Extras */}
-        <div className="mt-5">
-          <p className="mb-2 text-sm font-medium text-foreground">Add extras</p>
-          <div className="flex flex-wrap gap-2">
-            {buildExtras.map((e) => {
-              const active = state.extras.includes(e.id);
-              return (
-                <button
-                  key={e.id}
-                  type="button"
-                  onClick={() => toggleExtra(e.id)}
-                  aria-pressed={active}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all",
-                    active
-                      ? "border-accent bg-accent text-white"
-                      : "border-sage-200 text-ink-700 hover:border-sage-300 hover:bg-sage-50",
-                  )}
-                >
-                  {active && <Check className="h-3.5 w-3.5" />}
-                  {e.label}
-                  <span className={active ? "text-white/80" : "text-muted-foreground"}>
-                    +{formatAud(e.price)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Live price */}
-        <div className="mt-auto pt-6">
+        <div ref={summaryRef} className="mt-auto pt-4">
           <div className="rounded-3xl bg-sage-900 p-5 text-mint-100">
-            <div className="flex items-end justify-between">
+            <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="text-sm text-mint-200/80">
-                  {estimate.recurring ? "Per visit" : "One-off total"}
+                  {activeCount === 0
+                    ? "Nothing selected"
+                    : `Total · ${activeCount} ${activeCount === 1 ? "service" : "services"}`}
                 </p>
                 <motion.div
-                  key={estimate.total}
-                  initial={{ opacity: 0.4, y: 4 }}
+                  key={basket.subtotal}
+                  initial={reduce ? false : { opacity: 0.4, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
-                  className="font-display text-4xl font-semibold text-white"
+                  transition={{ duration: 0.25, ease: EASE }}
+                  className="font-display text-3xl font-semibold text-white sm:text-4xl"
                 >
-                  {formatAud(estimate.total)}
+                  {formatAud(basket.subtotal)}
                 </motion.div>
-              </div>
-              <div className="text-right text-xs text-mint-200/70">
-                <p>{estimate.frequencyLabel}</p>
-                {estimate.discount > 0 && (
-                  <p className="text-emerald-400">
-                    saving {formatAud(estimate.discount)}
-                  </p>
-                )}
               </div>
             </div>
 
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <Button
-                href="/contact"
-                variant="accent"
-                className="w-full"
-                aria-disabled={estimate.roomCount === 0}
-              >
+            <div className="mt-4 flex flex-col gap-2">
+              <Button href={contactHref} variant="accent" className="w-full">
                 <Calendar className="h-4 w-4" /> Book this clean
               </Button>
-              <Button
-                href="/contact"
-                className="w-full border border-white/30 bg-white/10 text-white hover:bg-white/20"
+              <WhatsAppLink
+                location="build-your-clean"
+                context={
+                  activeCount > 0 ? `${activeCount} services` : undefined
+                }
+                message={whatsappBasketMessage(
+                  basket.lines.map((l) => l.label),
+                  formatAud(basket.subtotal),
+                )}
+                showIcon={false}
+                className={cn(darkContactPillClass, "w-full")}
               >
-                Save quote <ArrowRight className="h-4 w-4" />
-              </Button>
+                <WhatsAppIcon className="h-4 w-4" /> Send on WhatsApp
+              </WhatsAppLink>
             </div>
+            <p className="mt-3 text-xs text-mint-200/70">
+              Fixed prices — confirmed before we start. No call-out fees.
+            </p>
           </div>
         </div>
       </div>
     </div>
+
+      {/* Mobile sticky running total */}
+      <AnimatePresence>
+        {inSection && !summaryVisible && activeCount > 0 && (
+          <motion.div
+            initial={reduce ? { opacity: 0 } : { y: 72, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reduce ? { opacity: 0 } : { y: 72, opacity: 0 }}
+            transition={{ duration: 0.28, ease: EASE }}
+            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-xl lg:hidden"
+            style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-muted-foreground">
+                  {activeCount} {activeCount === 1 ? "service" : "services"}
+                </p>
+                <motion.p
+                  key={basket.subtotal}
+                  initial={reduce ? false : { opacity: 0.5, y: 3 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, ease: EASE }}
+                  className="font-display text-2xl font-semibold leading-none tabular-nums text-foreground"
+                >
+                  {formatAud(basket.subtotal)}
+                </motion.p>
+              </div>
+              <Button href={contactHref} variant="accent" className="h-12 shrink-0">
+                <Calendar className="h-4 w-4" /> Book
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
-function RoomTile({
-  room,
-  qty,
+/* -------------------------------- basket row ------------------------------ */
+
+function BasketRow({
+  service,
+  row,
   onChange,
 }: {
-  room: RoomType;
-  qty: number;
-  onChange: (qty: number) => void;
+  service: ServiceDef;
+  row: RowState;
+  onChange: (patch: Partial<RowState>) => void;
 }) {
   const reduce = useReducedMotion();
-  const Icon = roomIcons[room.icon] ?? Sofa;
-  const active = qty > 0;
+  const Icon = serviceIcons[service.icon] ?? Layers;
+  const mode = service.modes.find((m) => m.id === row.modeId) ?? service.modes[0];
+  const pricing = mode.pricing;
+  const quoteOnly = pricing.kind === "inspection";
 
-  // Non-quantity rooms: the whole tile is a toggle button.
-  if (!room.perUnit) {
-    return (
-      <button
-        type="button"
-        onClick={() => onChange(active ? 0 : 1)}
-        aria-pressed={active}
-        aria-label={`${room.label}${active ? " (selected)" : ""}`}
-        className={cn(
-          "relative flex aspect-[4/3] flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border text-center transition-colors",
-          active ? "border-emerald-500/40" : "border-sage-200 bg-white/60",
-        )}
-      >
-        <FillLayer active={active} reduce={!!reduce} />
-        <Icon
-          className={cn(
-            "relative h-5 w-5 transition-colors",
-            active ? "text-white" : "text-sage-500",
-          )}
-        />
-        <span
-          className={cn(
-            "relative text-xs font-medium transition-colors",
-            active ? "text-white" : "text-ink-600",
-          )}
-        >
-          {room.label}
-        </span>
-      </button>
-    );
-  }
-
-  // Quantity rooms: tile shows an Add button, then a −/+ stepper.
   return (
     <div
       className={cn(
-        "relative flex aspect-[4/3] flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border text-center",
-        active ? "border-emerald-500/40" : "border-sage-200 bg-white/60",
+        "rounded-3xl border p-4 transition-colors",
+        row.enabled
+          ? "border-accent bg-accent/[0.04]"
+          : "border-border hover:border-sage-300 hover:bg-sage-50/50",
       )}
     >
-      <FillLayer active={active} reduce={!!reduce} />
-      <Icon
-        className={cn(
-          "relative h-5 w-5 transition-colors",
-          active ? "text-white" : "text-sage-500",
-        )}
-      />
-      <span
-        className={cn(
-          "relative text-xs font-medium transition-colors",
-          active ? "text-white" : "text-ink-600",
-        )}
-      >
-        {room.label}
-      </span>
-
-      {active ? (
-        <div className="relative mt-0.5 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onChange(qty - 1)}
-            aria-label={`Remove a ${room.label}`}
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-white transition-colors hover:bg-white/40"
-          >
-            <Minus className="h-3.5 w-3.5" />
-          </button>
-          <span className="min-w-4 text-sm font-semibold text-white tabular-nums">
-            {qty}
-          </span>
-          <button
-            type="button"
-            onClick={() => onChange(Math.min(qty + 1, room.max))}
-            disabled={qty >= room.max}
-            aria-label={`Add a ${room.label}`}
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-white transition-colors hover:bg-white/40 disabled:opacity-40"
-          >
-            <Plus className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ) : (
+      <div className="flex items-center gap-3">
         <button
           type="button"
-          onClick={() => onChange(1)}
-          aria-label={`Add ${room.label}`}
-          className="relative mt-0.5 inline-flex items-center gap-1 rounded-full bg-sage-100 px-2.5 py-0.5 text-xs font-medium text-sage-700 transition-colors hover:bg-sage-200"
+          onClick={() => onChange({ enabled: !row.enabled })}
+          aria-pressed={row.enabled}
+          className="flex min-h-[44px] flex-1 items-center gap-3 text-left"
         >
-          <Plus className="h-3 w-3" /> Add
+          <span
+            className={cn(
+              "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+              row.enabled
+                ? "bg-accent text-white"
+                : "bg-sage-100 text-sage-600",
+            )}
+          >
+            {row.enabled ? (
+              <Check className="h-5 w-5" />
+            ) : (
+              <Icon className="h-5 w-5" />
+            )}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold text-foreground">
+              {service.name}
+            </span>
+            <span className="block text-xs text-muted-foreground">
+              {quoteOnly ? "Quoted on inspection" : service.tagline}
+            </span>
+          </span>
         </button>
+
+        {!row.enabled && (
+          <button
+            type="button"
+            onClick={() => onChange({ enabled: true })}
+            className="inline-flex h-11 shrink-0 items-center gap-1 rounded-full bg-sage-100 px-4 text-sm font-medium text-sage-700 transition-colors hover:bg-sage-200"
+          >
+            <Plus className="h-4 w-4" /> Add
+          </button>
+        )}
+      </div>
+
+      {row.enabled && (
+        <motion.div
+          initial={reduce ? false : { opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ duration: 0.25, ease: EASE }}
+          className="overflow-hidden"
+        >
+          <div className="mt-4 space-y-3 border-t border-border/60 pt-4">
+            {/* Mode toggle (carpet) */}
+            {service.modes.length > 1 && (
+              <div className="flex flex-wrap gap-2">
+                {service.modes.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => onChange({ modeId: m.id })}
+                    aria-pressed={m.id === row.modeId}
+                    className={cn(
+                      "inline-flex h-11 items-center rounded-full border px-4 text-sm font-medium transition-colors",
+                      m.id === row.modeId
+                        ? "border-accent bg-accent text-white"
+                        : "border-sage-200 text-ink-700 hover:bg-sage-50",
+                    )}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {pricing.kind === "sized" ? (
+              <div className="space-y-2">
+                {pricing.sizes.map((size) => (
+                  <div
+                    key={size.id}
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span className="text-sm text-ink-700">
+                      {size.label}
+                      <span className="ml-2 text-xs text-muted-foreground tabular-nums">
+                        {formatAud(size.price)}
+                      </span>
+                    </span>
+                    <QuantityStepper
+                      value={row.sizes[size.id] ?? 0}
+                      min={0}
+                      max={pricing.maxPerSize}
+                      onChange={(v) =>
+                        onChange({ sizes: { ...row.sizes, [size.id]: v } })
+                      }
+                      label={`${size.label} mattresses`}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-ink-700">
+                  How many {service.unit.plural}?
+                </span>
+                <QuantityStepper
+                  value={row.quantity}
+                  min={quoteOnly ? 1 : (pricing as { minQty: number }).minQty}
+                  max={(pricing as { maxQty: number }).maxQty}
+                  onChange={(v) => onChange({ quantity: v })}
+                  label={service.unit.plural}
+                />
+              </div>
+            )}
+          </div>
+        </motion.div>
       )}
     </div>
-  );
-}
-
-function FillLayer({ active, reduce }: { active: boolean; reduce: boolean }) {
-  return (
-    <motion.span
-      aria-hidden="true"
-      className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-mint-500"
-      initial={false}
-      animate={{
-        opacity: active ? 1 : 0,
-        scale: active ? 1 : 0.7,
-      }}
-      transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
-      style={{ transformOrigin: "bottom center" }}
-    />
   );
 }

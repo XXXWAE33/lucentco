@@ -1,72 +1,21 @@
-/** Home + marketing content. Real Brisbane copy — no placeholders. */
-
-export type ServiceGroup = {
-  id: string;
-  name: string;
-  tagline: string;
-  blurb: string;
-  items: string[];
-  from: number; // indicative "from" price (AUD)
-};
-
-export const serviceGroups: ServiceGroup[] = [
-  {
-    id: "residential",
-    name: "Residential",
-    tagline: "Homes that feel brand new",
-    blurb:
-      "Regular and one-off cleans for houses and apartments — from a weekly tidy in New Farm to a full spring clean in Bardon.",
-    items: [
-      "Weekly, fortnightly & monthly",
-      "Deep cleans & spring cleans",
-      "Move-in / move-out",
-      "Eco & pet-friendly products",
-    ],
-    from: 120,
-  },
-  {
-    id: "end-of-lease",
-    name: "End of Lease",
-    tagline: "Bond back, guaranteed",
-    blurb:
-      "Real-estate-ready exit cleans checked against your agent's exit list. If they're not happy, we return within 72 hours — free.",
-    items: [
-      "Agent-approved checklist",
-      "Carpet steam add-on",
-      "Oven, windows & walls",
-      "Bond-back guarantee",
-    ],
-    from: 290,
-  },
-  {
-    id: "specialty",
-    name: "Specialty",
-    tagline: "The detail work",
-    blurb:
-      "Targeted services that restore the things a standard clean can't — upholstery, glass, ovens and mattresses.",
-    items: [
-      "Carpet & upholstery steam",
-      "Interior & exterior windows",
-      "Oven & rangehood detail",
-      "Mattress sanitising",
-    ],
-    from: 99,
-  },
-  {
-    id: "commercial",
-    name: "Commercial",
-    tagline: "Spaces that mean business",
-    blurb:
-      "Reliable, after-hours cleaning for Brisbane offices, retail and short-stays — consistent crews, consistent results.",
-    items: [
-      "Offices & co-working",
-      "Retail & showrooms",
-      "Airbnb turnover",
-      "Scheduled contracts",
-    ],
-    from: 0,
-  },
-];
+/**
+ * Home + marketing content.
+ *
+ * Service names and prices are NOT defined here — they live in
+ * `src/config/pricing.ts`, the single source of truth.
+ *
+ * ⚠️ DO NOT SHIP `features` OR `stats` WITHOUT REWRITING THEM FIRST.
+ * Both are legacy copy from the earlier general-cleaning positioning and
+ * contain claims this business has NOT verified: a "bond-back guarantee", a
+ * "60-point quality check", "98% bond-back success", "600+ reviews" and
+ * "12k cleans". Nothing renders them today — `WhyLucent` and `StatsBand` were
+ * both pulled from the homepage and About page for exactly this reason. If you
+ * reinstate either component, replace every claim below with something the
+ * client can substantiate.
+ *
+ * `steps` (How we work) IS current and safe — it was rewritten for the
+ * carpet/upholstery business.
+ */
 
 export type Feature = {
   icon:
@@ -122,68 +71,30 @@ export type Step = {
 export const steps: Step[] = [
   {
     number: "01",
-    title: "Get your instant quote",
-    body: "Tell us your suburb, home size and the clean you need. Our quote tool gives you a transparent price range in seconds.",
+    title: "Get your price",
+    body: "Tell us what needs doing — rooms of carpet, seats on the couch, how many mattresses. You get a fixed price on the spot.",
   },
   {
     number: "02",
-    title: "Pick a time that suits",
-    body: "Choose from live availability across your area — one-off or recurring, mornings or after-hours.",
+    title: "Pick a time",
+    body: "Choose a day that suits you and we'll confirm it. Blinds and water damage are booked in for an inspection first.",
   },
   {
     number: "03",
-    title: "Meet your cleaner",
-    body: "A vetted local crew arrives fully equipped with eco products. Track their progress from confirmed to complete.",
+    title: "We do the work",
+    body: "We arrive with the right equipment for the job, walk the space with you first, and flag anything we find before we start.",
   },
   {
     number: "04",
-    title: "Enjoy the Lucent finish",
-    body: "Walk into a spotless space. Not perfect? We'll make it right — guaranteed.",
+    title: "Same price you were quoted",
+    body: "The figure you were given is the figure you pay. Nothing gets added on the day.",
   },
 ];
 
-export type Testimonial = {
-  quote: string;
-  name: string;
-  suburb: string;
-  service: string;
-  rating: number;
-};
-
-export const testimonials: Testimonial[] = [
-  {
-    quote:
-      "Got my full bond back with zero fuss. The team followed our agent's exit list to the letter and even re-did one room same day. Genuinely impressed.",
-    name: "Hannah M.",
-    suburb: "Bulimba",
-    service: "End of lease",
-    rating: 5,
-  },
-  {
-    quote:
-      "We've had the same fortnightly cleaner for eight months now. The house always smells fresh, never chemical, and it's safe for our two dogs.",
-    name: "Daniel & Priya",
-    suburb: "Paddington",
-    service: "Fortnightly residential",
-    rating: 5,
-  },
-  {
-    quote:
-      "Manages our three Airbnb properties across New Farm and Teneriffe. Turnovers are flawless and guests constantly mention how clean the places are.",
-    name: "Marcus T.",
-    suburb: "New Farm",
-    service: "Airbnb turnover",
-    rating: 5,
-  },
-  {
-    quote:
-      "Our West End office has never looked better. Reliable after-hours crew, easy invoicing, and the difference in the kitchen and bathrooms is night and day.",
-    name: "Sophie L.",
-    suburb: "West End",
-    service: "Commercial office",
-    rating: 5,
-  },
-];
+/*
+ * Testimonials moved to `src/config/testimonials.ts` — they are currently
+ * PLACEHOLDERS awaiting real reviews from the client.
+ */
 
 export const stats = [
   { value: "4.9", suffix: "★", label: "Average rating", detail: "from 600+ Brisbane reviews" },

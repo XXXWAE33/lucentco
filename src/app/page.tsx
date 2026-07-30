@@ -1,98 +1,99 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
+  Atmosphere,
   Hero,
+  BookWithConfidence,
   ServicesOverview,
   WhyLucent,
   HowItWorks,
-  StatsBand,
-  EcoImpact,
+  QuoteJourney,
+  ContentCards,
   Testimonials,
   ServiceArea,
   CtaBand,
 } from "@/components/home";
 import { Section, SectionHeading } from "@/components/ui";
-import {
-  InstantQuote,
-  BuildYourClean,
-  BookingTracker,
-  BeforeAfter,
-  CleanScore,
-} from "@/components/features";
+import { QuoteTabs } from "@/components/features";
 
 export const metadata: Metadata = {
-  title: "Premium eco-cleaning in Brisbane",
+  title: "Carpet & upholstery cleaning in Brisbane",
   description:
-    "Lucent Clean Co. delivers premium, eco-friendly residential and commercial cleaning across Brisbane — instant quotes, vetted local crews, and a bond-back guarantee.",
+    "Specialist carpet, couch, mattress and curtain cleaning across Brisbane. Fixed prices you can check online, non-toxic products, and deodoriser included on every couch clean.",
   alternates: { canonical: "/" },
 };
 
 export default function HomePage() {
   return (
     <>
-      <Hero />
+      {/*
+        1 + 2 share ONE atmospheric wash.
+
+        `<Atmosphere>` is positioned against this wrapper, not against either
+        section, so the gradient crosses the section boundary and nothing paints
+        at that edge — which is what removes the horizontal banding. Neither
+        child may set its own background-color.
+
+        `isolate` creates the stacking context the z-layers are declared in.
+        `overflow-x-clip` (not `hidden`) contains the hero visual's right-edge
+        bleed without creating a scroll container, and leaves overflow-y visible
+        so the visual can still crop past the top of the viewport.
+      */}
+      <div className="relative isolate overflow-x-clip">
+        <Atmosphere />
+        <Hero />
+        <BookWithConfidence />
+      </div>
+
+      {/* 3 — Services */}
       <ServicesOverview />
+
+      {/* 3b — Why Lucent (verified-only trust cards + service pills) */}
       <WhyLucent />
+
+      {/*
+        4 — Get a price. ONE section, two tools behind an explicit choice.
+
+        This was previously two stacked sections (Instant pricing, then Build
+        your quote) with near-identical framing — which read as duplication
+        rather than choice. `QuoteTabs` keeps both tools but makes the visitor
+        pick one, and drives the tab off the URL hash so the old
+        `#instant-quote` / `#build-your-clean` deep links still land on the
+        right tool.
+
+        The `InstantQuote` wizard is still exported and unchanged; the selector
+        replaced it here because it answers the same question in three taps
+        rather than four screens.
+      */}
+      <Section id="get-a-quote" className="bg-eco-wash">
+        <SectionHeading
+          eyebrow="Get your price"
+          title="No forms. No waiting on a callback."
+          intro="Price one service, or combine several into a single total — whichever suits the job."
+          align="center"
+        />
+        <div className="mt-8 sm:mt-12">
+          <QuoteTabs />
+        </div>
+      </Section>
+
+      {/* 5 — How we work */}
       <HowItWorks />
-      <Section id="instant-quote" className="bg-eco-wash">
-        <SectionHeading
-          eyebrow="Instant pricing"
-          title="Get a price in under two minutes"
-          intro="Answer a few quick questions and our AI gives you a transparent estimate on the spot — no waiting on a callback."
-          align="center"
-        />
-        <div className="mt-12">
-          <InstantQuote />
-        </div>
-      </Section>
-      <Section id="build-your-clean">
-        <SectionHeading
-          eyebrow="Build your clean"
-          title="Design your perfect clean, room by room"
-          intro="Toggle the rooms you want done and watch your price update live. Mix and match until it's exactly right."
-          align="center"
-        />
-        <div className="mt-12">
-          <BuildYourClean />
-        </div>
-      </Section>
-      <Section id="booking-tracker" className="bg-sage-50/60">
-        <SectionHeading
-          eyebrow="Always in the loop"
-          title="Track your clean in real time"
-          intro="From the moment you book to the final sparkle, follow every step live — know exactly when your cleaner is on the way."
-          align="center"
-        />
-        <div className="mt-12">
-          <BookingTracker />
-        </div>
-      </Section>
-      <Section id="before-after">
-        <SectionHeading
-          eyebrow="See the difference"
-          title="The Lucent transformation"
-          intro="Drag to reveal the before and after across real Brisbane homes — every clean finished to our 60-point standard."
-          align="center"
-        />
-        <div className="mt-12">
-          <BeforeAfter />
-        </div>
-      </Section>
-      <Section id="clean-score" className="bg-eco-wash">
-        <SectionHeading
-          eyebrow="AI Clean Score"
-          title="Snap it. Score it. Sort it."
-          intro="Upload a photo of any room and our AI rates its cleanliness, breaks it down by area, and recommends the right service — instantly."
-          align="center"
-        />
-        <div className="mt-12">
-          <CleanScore />
-        </div>
-      </Section>
-      <StatsBand />
+
+      {/* 5b — Three routes to a price, staged-card journey */}
+      <QuoteJourney />
+
+      {/* 5c — Editorial content cards (1 wide + 2 narrow) */}
+      <ContentCards />
+
+      {/* 6 — Testimonials */}
       <Testimonials />
-      <EcoImpact />
+
+      {/* 7 — Service area */}
       <ServiceArea />
+
+      {/* 8 — Final CTA (WhatsApp + call) */}
       <CtaBand />
     </>
   );
 }
+

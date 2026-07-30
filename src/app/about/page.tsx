@@ -6,13 +6,13 @@ import {
   Container,
   Button,
 } from "@/components/ui";
-import { StatsBand, CtaBand } from "@/components/home";
+import { CtaBand } from "@/components/home";
 import { serviceSuburbs } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About us",
   description:
-    "Lucent Clean Co. is a Brisbane-born eco-cleaning company built on non-toxic products, vetted local cleaners and a genuinely high-end finish.",
+    "Lucent Clean Co. is a Brisbane-born fabric care company — carpet, upholstery, mattress and curtain cleaning built on non-toxic products, careful local technicians and fixed, honest pricing.",
   alternates: { canonical: "/about" },
 };
 
@@ -25,18 +25,18 @@ const values = [
   {
     icon: Heart,
     title: "People first",
-    body: "Our cleaners are fairly paid, properly trained Brisbane locals. Happy crews do better work — and you see the same faces each visit.",
+    body: "Our technicians are fairly paid, properly trained Brisbane locals. Careful people do careful work — and it shows in the finish.",
   },
   {
     icon: ShieldCheck,
-    title: "Standards that hold",
-    body: "A 60-point quality check on every clean and a bond-back guarantee on every exit. 'Good enough' was never the goal.",
+    title: "Told before, not after",
+    body: "We walk every job with you first and flag anything we find — sun-perished fabric, existing wear — before a machine is switched on. And the price you're quoted is the price you pay.",
   },
 ];
 
 export default function AboutPage() {
   return (
-    <main className="pt-16 lg:pt-18">
+    <main className="pt-chrome">
       {/* Intro */}
       <section className="bg-eco-wash section-y">
         <Container>
@@ -48,10 +48,10 @@ export default function AboutPage() {
               Premium cleaning with a{" "}
               <span className="text-gradient">conscience</span>
             </h1>
-            <p className="mt-5 text-pretty text-lg text-muted-foreground">
-              We started Lucent because Brisbane deserved a cleaning service that
-              felt genuinely high-end — without the harsh chemicals, the no-shows,
-              or the rushed once-over.
+            <p className="mt-4 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
+              We started Lucent because Brisbane deserved fabric care that felt
+              genuinely high-end — without the harsh chemicals, the no-shows, or
+              the rushed once-over.
             </p>
           </div>
         </Container>
@@ -60,23 +60,26 @@ export default function AboutPage() {
       {/* Story */}
       <Section>
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="space-y-5 text-pretty text-lg leading-relaxed text-muted-foreground">
+          <div className="space-y-4 text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground sm:space-y-5 sm:text-lg">
             <h2 className="text-fluid-h2 font-semibold text-foreground">
               Our story
             </h2>
             <p>
-              Lucent began with a simple frustration: every cleaner was either
-              affordable or actually good — rarely both, and almost never
-              eco-friendly. After one too many homes left smelling of bleach, we
-              decided to build the service we wished existed.
+              Lucent began with a simple frustration: carpet and upholstery
+              cleaning was either cheap and careless or expensive and vague —
+              and almost never honest about price. After one too many lounges
+              ruined by the wrong method, we decided to build the service we
+              wished existed.
             </p>
             <p>
-              Today we clean hundreds of homes and businesses across New Farm,
-              Bulimba, Paddington and beyond — with plant-based products, vetted
-              local crews, and a finish you can genuinely feel underfoot.
+              Today we care for carpets, couches, mattresses, curtains and
+              blinds across New Farm, Bulimba, Paddington and beyond — with
+              plant-based products, methods matched to the fabric in front of
+              us, and fixed prices you can check before you ever pick up the
+              phone.
             </p>
             <p>
-              We&apos;re proudly Brisbane-based, and we treat every space like
+              We&apos;re proudly Brisbane-based, and we treat every home like
               it&apos;s our own.
             </p>
             <Button href="/contact" variant="accent">
@@ -105,7 +108,7 @@ export default function AboutPage() {
           title="The principles behind every clean"
           align="center"
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
           {values.map((v) => (
             <div
               key={v.title}
@@ -123,7 +126,11 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <StatsBand />
+      {/*
+        StatsBand deliberately removed: it published invented figures
+        (12k cleans, 600+ reviews, 98% bond-back). Real, verifiable numbers
+        live in the homepage TrustStrip once the client supplies them.
+      */}
 
       {/* Local */}
       <Section>

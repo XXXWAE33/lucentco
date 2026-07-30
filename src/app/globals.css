@@ -4,31 +4,51 @@
 
 @layer base {
   :root {
-    /* Semantic color tokens — HSL channels (used as hsl(var(--x) / alpha)) */
-    --canvas: 100 24% 99%;
-    --background: 100 24% 99%;
-    --foreground: 150 6% 18%;
+    /*
+     * Semantic colour tokens — HSL channels (used as hsl(var(--x) / alpha)).
+     * Migrated 2026-07-29 to the supplied design system.
+     *   #FFFFFF white · #F8FBFA v.light · #1DB584 primary · #2D5F4F dark
+     *   #E8F0ED light · #444444 gray-700 · #1A1A1A gray-900
+     */
+    --canvas: 160 27% 98%; /* #F8FBFA */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 0 0% 10%; /* #1A1A1A */
 
     --card: 0 0% 100%;
-    --card-foreground: 150 6% 18%;
+    --card-foreground: 0 0% 10%;
 
-    --primary: 134 23% 32%; /* sage */
-    --primary-foreground: 150 50% 98%;
+    --primary: 161 36% 27%; /* #2D5F4F dark green */
+    --primary-foreground: 0 0% 100%;
 
-    --accent: 147 84% 39%; /* emerald */
+    --accent: 161 72% 41%; /* #1DB584 primary green */
     --accent-foreground: 0 0% 100%;
 
-    --muted: 130 16% 92%;
-    --muted-foreground: 145 6% 40%;
+    --muted: 0 0% 96%; /* #F5F5F5 */
+    --muted-foreground: 0 0% 27%; /* #444444 — 9.7:1 on white */
 
-    --border: 135 12% 87%;
-    --ring: 147 84% 39%;
+    --border: 158 21% 93%; /* #E8F0ED */
+    --ring: 161 72% 41%;
 
     /* Motion */
     --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
     --radius: 1rem;
+
+    /*
+     * Fixed chrome height — announcement strip + header.
+     * ONE source of truth: every page clears the header with `.pt-chrome`
+     * rather than its own hardcoded padding, so changing the header height
+     * here can never leave a page tucked underneath it.
+     */
+    --announce-h: 2rem;
+    --header-h: 4.75rem;
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --header-h: 4.5rem;
+    }
   }
 
   * {
@@ -87,6 +107,43 @@
     @apply rounded-3xl border border-border bg-card shadow-card;
   }
 
+  /* ── Marquee ────────────────────────────────────────────────────────────
+     Viewport clips; the track holds two identical sets and translates -50%,
+     so the loop is seamless. Transform-only, so it stays on the compositor
+     and holds 60fps on mid-range Android. */
+  .marquee {
+    overflow: hidden;
+    /* Fade both edges so cards enter and leave softly. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 7%,
+      #000 93%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 7%,
+      #000 93%,
+      transparent 100%
+    );
+  }
+
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    /* Prevent sub-pixel seam shimmer between the two sets. */
+    backface-visibility: hidden;
+  }
+
+  /* Pause so people can actually read. focus-within keeps it keyboard-usable. */
+  .marquee:hover .marquee__track,
+  .marquee:focus-within .marquee__track {
+    animation-play-state: paused;
+  }
+
   /* Skeleton shimmer (used for lazy media / image fallbacks) */
   .skeleton {
     @apply relative overflow-hidden bg-muted;
@@ -104,6 +161,20 @@
 }
 
 @layer utilities {
+  /* Clears the fixed announcement strip + header. See --header-h above. */
+  .pt-chrome {
+    padding-top: calc(var(--announce-h) + var(--header-h));
+  }
+
+  /* Scroll without a visible bar — used on mobile chip rows that overflow. */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .text-balance {
     text-wrap: balance;
   }
@@ -119,7 +190,65 @@
   /* Soft radial brand wash for section backgrounds */
   .bg-eco-wash {
     background:
-      radial-gradient(60% 50% at 15% 0%, hsl(147 84% 39% / 0.06), transparent 70%),
-      radial-gradient(50% 60% at 100% 20%, hsl(134 40% 50% / 0.07), transparent 70%);
+      radial-gradient(60% 50% at 15% 0%, hsl(161 72% 41% / 0.06), transparent 70%),
+      radial-gradient(50% 60% at 100% 20%, hsl(161 36% 40% / 0.07), transparent 70%);
+  }
+
+  /* Designed stand-in shown until a real service photo is supplied. */
+  .img-placeholder {
+    background-color: #e8f0ed; /* sage-100 */
+    background-image:
+      radial-gradient(90% 70% at 18% 8%, rgba(199, 238, 221, 0.95), transparent 62%),
+      radial-gradient(80% 80% at 92% 94%, rgba(169, 199, 188, 0.6), transparent 60%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.5) 0 2px,
+        transparent 2px 14px
+      );
+  }
+}
+
+/*
+ * One flex row of cards inside a marquee track.
+ *
+ * The trailing gap MUST live inside the set (as padding-right) rather than as
+ * a gap on the track. The track translates by exactly -50%, so each set has to
+ * be exactly half the track width — a gap between the two sets would leave the
+ * loop half-a-gap short and produce a visible jump on every cycle.
+ */
+.marquee__set {
+  display: flex;
+  gap: 1rem;
+  padding-right: 1rem;
+  flex-shrink: 0;
+}
+
+/*
+ * Reduced motion: the marquee becomes a static wrapped grid rather than a
+ * frozen strip. Declared outside @layer so it beats the global base reset,
+ * and driven purely by CSS so it is correct on first paint — no JS, no
+ * hydration flash.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .marquee__track {
+    animation: none !important;
+    width: 100%;
+    will-change: auto;
+  }
+
+  .marquee__set {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* The second set exists only to make the loop seamless — drop it. */
+  .marquee__track > [aria-hidden="true"] {
+    display: none;
   }
 }

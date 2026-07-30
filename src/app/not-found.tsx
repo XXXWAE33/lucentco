@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <main className="bg-eco-wash pt-16 lg:pt-18">
+    <main className="bg-eco-wash pt-chrome">
       <Container className="flex min-h-[60vh] flex-col items-center justify-center gap-6 py-section text-center">
         <span className="eyebrow">Error 404</span>
         <h1 className="text-fluid-h1 font-semibold">

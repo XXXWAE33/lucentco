@@ -35,7 +35,7 @@ export function SectionHeading({
   return (
     <Reveal
       className={cn(
-        "flex flex-col gap-4",
+        "flex flex-col gap-3 sm:gap-4",
         align === "center" && "mx-auto max-w-2xl items-center text-center",
         className,
       )}
@@ -43,7 +43,8 @@ export function SectionHeading({
       {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
       <h2 className="text-fluid-h2 font-semibold text-foreground">{title}</h2>
       {intro ? (
-        <p className="max-w-prose text-pretty text-lg text-muted-foreground">
+        // Explicit mobile size — 18px intro copy reads as shouting at 375px.
+        <p className="max-w-prose text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground sm:text-lg">
           {intro}
         </p>
       ) : null}

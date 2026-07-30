@@ -1,136 +1,114 @@
-import { ArrowRight, Star, ShieldCheck, Leaf, Sparkles, CalendarCheck } from "lucide-react";
+import { ArrowRight, Phone, Sparkles } from "lucide-react";
 import { Button, Container } from "@/components/ui";
+import { CallLink } from "@/components/layout";
+import { cn } from "@/lib/utils";
+import { hero, heroImage } from "@/config/homepage";
+import { HeroVisual } from "./hero-visual";
+import { TrustStats, RatingCluster } from "./trust-strip";
 
 /**
- * Hero. The right-hand visual is a pure CSS/SVG composition (no 3D / external
- * deps). Scroll + float animation is layered on in step 7.
+ * Hero.
+ *
+ * MOBILE (<lg) — recomposed, not shrunk. One centred column, reordered so the
+ * proof lands before the ask:
+ *     eyebrow → headline → sub-line → stats → CTA pair → rating
+ * The visual is cut from the fold entirely (see `HeroVisual`), because a
+ * 251px-tall empty placeholder pushed the stats off-screen.
+ *
+ * DESKTOP (lg+) — two columns via explicit grid placement:
+ *     row 1: copy    | visual (spans rows 1–2)
+ *     row 2: CTAs    |
+ *     row 3: stats   | rating
+ * Placement is explicit so the same DOM serves both layouts — nothing is
+ * duplicated for mobile, so the two can't drift apart.
+ *
+ * This section paints NO background. Colour comes from `<Atmosphere>` on the
+ * shared wrapper in `app/page.tsx`.
  */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-eco-wash pt-28 lg:pt-36">
-      {/* Soft brand glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-emerald-300/20 blur-3xl" />
-        <div className="absolute right-0 top-40 h-[28rem] w-[28rem] rounded-full bg-mint-300/30 blur-3xl" />
-      </div>
+    <section className="relative pt-chrome">
+      <Container>
+        <div
+          className={cn(
+            "flex flex-col items-center pt-6 text-center sm:pt-8",
+            "lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8 lg:pt-10 lg:text-left",
+          )}
+        >
+          {/* ── Copy ──────────────────────────────────────────────────── */}
+          <div className="order-2 max-w-xl lg:order-none lg:col-start-1 lg:row-start-1">
+            <span className="eyebrow justify-center lg:justify-start">
+              <Sparkles className="h-4 w-4 shrink-0" /> {hero.eyebrow}
+            </span>
 
-      <Container className="grid items-center gap-12 pb-section lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
-        {/* Copy */}
-        <div className="max-w-xl">
-          <span className="eyebrow">
-            <Leaf className="h-4 w-4" /> Brisbane&apos;s premium eco-cleaners
-          </span>
+            <h1 className="mt-4 text-fluid-hero font-semibold text-foreground lg:mt-5">
+              {/* Two explicit lines — breaks identically at every width. */}
+              <span className="block">{hero.headline.lineOne}</span>
+              <span className="block text-gradient">{hero.headline.lineTwo}</span>
+            </h1>
 
-          <h1 className="mt-5 text-fluid-hero font-semibold text-foreground">
-            A spotless home,{" "}
-            <span className="text-gradient">without the chemicals</span>.
-          </h1>
-
-          <p className="mt-6 max-w-prose text-lg text-pretty text-muted-foreground">
-            Lucent Clean Co. brings agency-grade, eco-friendly cleaning to homes
-            and businesses across New Farm, Paddington, Bulimba and beyond. Vetted
-            local crews, non-toxic products, and a finish you can feel.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button href="/contact" variant="accent" size="lg">
-              Get an instant quote <ArrowRight className="h-4 w-4" />
-            </Button>
-            <Button href="/services" variant="outline" size="lg">
-              Explore services
-            </Button>
+            <p className="mx-auto mt-4 max-w-prose text-pretty text-base text-muted-foreground sm:text-lg lg:mx-0 lg:mt-5">
+              {hero.subline}
+            </p>
           </div>
 
-          {/* Trust row */}
-          <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="flex">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </span>
-              <strong className="font-semibold text-foreground">4.9</strong> from
-              600+ reviews
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              Bond-back guarantee
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Leaf className="h-4 w-4 text-emerald-600" />
-              100% eco products
-            </span>
+          {/* ── Stats — above the CTAs on mobile: proof before action ──── */}
+          <div className="order-3 mt-8 w-full lg:order-none lg:col-start-1 lg:row-start-3 lg:mt-16">
+            <TrustStats />
+          </div>
+
+          {/* ── CTA pair — equal-width side by side on mobile ──────────── */}
+          <div className="order-4 mt-7 grid w-full grid-cols-2 gap-3 sm:mx-auto sm:max-w-md lg:order-none lg:col-start-1 lg:row-start-2 lg:mx-0 lg:mt-7 lg:flex lg:max-w-none lg:justify-start">
+            <Button
+              href={hero.primaryCta.href}
+              variant="accent"
+              size="lg"
+              className="w-full lg:w-auto"
+            >
+              {/* Short label on mobile so it fits a half-width button. */}
+              <span className="sm:hidden">Get a quote</span>
+              <span className="hidden sm:inline">{hero.primaryCta.label}</span>
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </Button>
+            <CallLink
+              location="hero"
+              showIcon={false}
+              className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-full border border-sage-300 bg-transparent px-5 text-base font-medium text-sage-800 transition-colors hover:bg-sage-50 active:scale-[0.98] lg:w-auto lg:px-6"
+            >
+              <Phone className="h-4 w-4 shrink-0" /> {hero.secondaryCtaLabel}
+            </CallLink>
+          </div>
+
+          {/* ── Rating — own centred row beneath the CTAs on mobile ────── */}
+          <div className="order-5 mt-7 w-full lg:order-none lg:col-start-2 lg:row-start-3 lg:mt-16 lg:self-center">
+            <RatingCluster />
+          </div>
+
+          {/*
+            ── Visual ──────────────────────────────────────────────────
+            Hidden on mobile while the photo is outstanding. Once supplied it
+            returns as a full-bleed rounded card below the fold, never as a
+            shrunken box beside the text.
+          */}
+          {/*
+            Per the reference, the visual leads on mobile — it sits ABOVE the
+            headline (order-1) as a rounded card, not beside the text.
+            Still hidden until a real photo exists: an empty placeholder at the
+            very top of the fold would push the headline and proof off-screen.
+          */}
+          <div
+            className={cn(
+              "order-1 w-full",
+              heroImage.available ? "mb-7 block" : "hidden",
+              "lg:order-none lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mb-0 lg:block lg:w-full lg:-mr-[12vw] lg:-mt-56 xl:-mr-[9vw] xl:-mt-64",
+            )}
+          >
+            <HeroVisual className="mx-auto w-full max-w-md lg:max-w-none" />
           </div>
         </div>
 
-        {/* Visual — pure CSS/SVG eco composition */}
-        <HeroVisual />
+        <div className="h-14 lg:h-20" aria-hidden="true" />
       </Container>
     </section>
-  );
-}
-
-function HeroVisual() {
-  return (
-    <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-      <div className="relative aspect-square overflow-hidden rounded-4xl border border-white/60 bg-gradient-to-br from-mint-200 via-mint-100 to-emerald-200 shadow-lifted lg:aspect-[4/5]">
-        {/* Soft floating bubbles */}
-        <div aria-hidden="true" className="absolute inset-0">
-          <div className="absolute left-[16%] top-[18%] h-28 w-28 rounded-full bg-white/40 blur-md" />
-          <div className="absolute right-[18%] top-[30%] h-16 w-16 rounded-full bg-white/50 blur-sm" />
-          <div className="absolute bottom-[26%] left-[26%] h-36 w-36 rounded-full bg-emerald-300/40 blur-lg" />
-          <div className="absolute bottom-[20%] right-[22%] h-12 w-12 rounded-full bg-white/60" />
-          <div className="absolute left-[44%] top-[12%] h-6 w-6 rounded-full bg-white/70" />
-        </div>
-
-        {/* Centerpiece sparkle mark */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] border border-white/70 bg-white/40 backdrop-blur-md">
-            <Sparkles className="h-12 w-12 text-emerald-600" />
-          </div>
-        </div>
-
-        {/* Decorative concentric rings */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 400 400"
-          className="absolute inset-0 h-full w-full text-white/30"
-        >
-          <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" strokeWidth="1.5" />
-          <circle cx="200" cy="200" r="160" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      </div>
-
-      {/* Floating glass info cards */}
-      <div className="absolute -left-3 top-10 hidden rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-card backdrop-blur-md sm:block">
-        <div className="flex items-center gap-2.5">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-            <Leaf className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-sage-800">Eco-certified</p>
-            <p className="text-xs text-sage-700/70">Non-toxic &amp; pet-safe</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute -right-3 bottom-12 hidden rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-card backdrop-blur-md sm:block">
-        <div className="flex items-center gap-2.5">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-sage-100 text-sage-700">
-            <CalendarCheck className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-sm font-semibold text-sage-800">Next available</p>
-            <p className="text-xs text-sage-700/70">Tomorrow, 8:00am</p>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
