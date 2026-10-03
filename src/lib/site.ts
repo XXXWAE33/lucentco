@@ -39,11 +39,11 @@ export const contactChannels = {
 
 /** Fallback WhatsApp prefill when there is no page-specific context. */
 export const WHATSAPP_DEFAULT_MESSAGE =
-  "Hi Lucent Clean, I'd like a quote for cleaning.";
+  "Hi Velora Cleaning, I'd like a quote for cleaning.";
 
 /** Prefill for a specific service, e.g. "…a quote for couch cleaning." */
 export function whatsappServiceMessage(serviceName: string): string {
-  return `Hi Lucent Clean, I'd like a quote for ${serviceName.toLowerCase()}.`;
+  return `Hi Velora Cleaning, I'd like a quote for ${serviceName.toLowerCase()}.`;
 }
 
 /** Prefill for the multi-service basket: what's selected plus the estimate. */
@@ -52,7 +52,7 @@ export function whatsappBasketMessage(
   total: string,
 ): string {
   if (items.length === 0) return WHATSAPP_DEFAULT_MESSAGE;
-  return `Hi Lucent Clean, I'd like a quote for: ${items.join(", ")}. Estimated total ${total}.`;
+  return `Hi Velora Cleaning, I'd like a quote for: ${items.join(", ")}. Estimated total ${total}.`;
 }
 
 /** Build a wa.me link with an optional prefilled message. */
@@ -65,17 +65,17 @@ export function whatsappHref(message?: string): string {
 
 /** Central business + brand config — single source of truth for copy and SEO. */
 export const site = {
-  name: "Lucent Clean Co.",
-  shortName: "Lucent",
+  name: "Velora Cleaning Brisbane",
+  shortName: "Velora",
   tagline: "Brisbane carpet & upholstery specialists",
   description:
     "Specialist carpet, couch, mattress and curtain cleaning across Brisbane, plus blind cleaning and emergency water extraction. Fixed prices you can check online, non-toxic products, and deodoriser included on every couch clean.",
-  url: "https://lucentcleanco.com.au",
+  url: "https://velorabrisbane.com",
   /** Primary voice channel — mirrors `contactChannels.call`. */
   phone: contactChannels.call.display,
   phoneHref: contactChannels.call.href,
   whatsapp: contactChannels.whatsapp.display,
-  email: "hello@lucentcleanco.com.au",
+  email: "contact@velorabrisbane.com",
   abn: "12 345 678 901",
   address: {
     street: "Level 2, 240 Wickham Street",

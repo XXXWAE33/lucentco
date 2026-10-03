@@ -63,7 +63,12 @@ function initialRows(): Record<ServiceId, RowState> {
  * Multi-service basket. Add several services and see one combined total —
  * every figure comes from `calculateBasket`, the same engine the AI quote uses.
  */
-export function BuildYourClean() {
+export function BuildYourClean({
+  embedded = false,
+}: {
+  /** Inside the quote sheet: the sheet owns its own chrome, so no pinned bar. */
+  embedded?: boolean;
+} = {}) {
   const reduce = useReducedMotion();
   const [rows, setRows] = useState<Record<ServiceId, RowState>>(initialRows);
 
@@ -129,7 +134,12 @@ export function BuildYourClean() {
     <>
     <div
       ref={rootRef}
-      className="grid gap-5 rounded-3xl border border-border bg-card p-4 shadow-lifted sm:gap-6 sm:rounded-4xl sm:p-7 lg:grid-cols-[1.15fr_0.85fr]"
+      className={cn(
+        "grid gap-5 lg:grid-cols-[1.15fr_0.85fr]",
+        embedded
+          ? "sm:gap-6"
+          : "rounded-3xl border border-border bg-card p-4 shadow-lifted sm:gap-6 sm:rounded-4xl sm:p-7",
+      )}
     >
       {/* Service picker */}
       <div className="space-y-3">
@@ -222,7 +232,7 @@ export function BuildYourClean() {
                 <WhatsAppIcon className="h-4 w-4" /> Send on WhatsApp
               </WhatsAppLink>
             </div>
-            <p className="mt-3 text-xs text-mint-200/70">
+            <p className="mt-3 text-xs text-mint-200/85">
               Fixed prices — confirmed before we start. No call-out fees.
             </p>
           </div>
@@ -232,14 +242,21 @@ export function BuildYourClean() {
 
       {/* Mobile sticky running total */}
       <AnimatePresence>
-        {inSection && !summaryVisible && activeCount > 0 && (
+        {(embedded || inSection) && !summaryVisible && activeCount > 0 && (
           <motion.div
             initial={reduce ? { opacity: 0 } : { y: 72, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={reduce ? { opacity: 0 } : { y: 72, opacity: 0 }}
             transition={{ duration: 0.28, ease: EASE }}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-xl lg:hidden"
-            style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+            className={cn(
+              "border-border bg-background/95 py-3 backdrop-blur-xl lg:hidden",
+              // In the quote sheet the bar pins to the sheet's own scroll
+              // area rather than the viewport.
+              embedded
+                ? "sticky bottom-0 z-10 -mx-4 mt-4 border-t px-4"
+                : "fixed inset-x-0 bottom-0 z-40 border-t px-4",
+            )}
+            style={embedded ? undefined : { paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
           >
             <div className="flex items-center gap-3">
               <div className="min-w-0 flex-1">

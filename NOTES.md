@@ -142,10 +142,41 @@ These are live at the owner's direction (supplied in the redesign brief) but are
 - LocalBusiness + FAQPage JSON-LD
 
 ### Verified
+
+**Lighthouse — measured 2026-07-30**, production build (`npm start`), mobile
+form factor, simulated throttling, headless Edge (Chromium).
+
+| Route | Perf | A11y | Best Practices | SEO |
+|---|---|---|---|---|
+| `/` | **95** | **100** | **100** | **100** |
+| `/faq` | **95** | **100** | **100** | **100** |
+| `/pricing` | **95** | **100** | **100** | **100** |
+| `/services` | **95** | **100** | **100** | **100** |
+
+Core Web Vitals (`/`): FCP 1.7s · LCP 3.0s · **TBT 0ms** · **CLS 0.001** ·
+Speed Index 1.7s.
+
+Reproduce:
+```bash
+npm run build
+npx cross-env CHROME_PATH="<path to chrome or msedge>" npm start   # port 3000
+npx lighthouse http://localhost:3000 --form-factor=mobile \
+  --screenEmulation.mobile --throttling-method=simulate \
+  --chrome-flags="--headless=new" --view
+```
+> Lighthouse exits `1` on Windows with an EPERM removing its temp Chrome
+> profile. That happens *after* the audit — the report is still written. Check
+> the output file rather than the exit code.
+
+LCP 3.0s is the weakest metric and is **expected to improve**, not worsen, when
+real photography lands: the hero currently paints a CSS-gradient placeholder,
+and the `priority` + `fetchpriority="high"` path only engages for a real
+`<img>`.
+
+**Other measurements**
 - **0px horizontal overflow** at 375 / 390 / 414 / 768 / 1280
 - **0** tap targets under 44px (excluding inline prose links — WCAG 2.5.8 exempt)
-- **CLS 0.036** full-page scroll at 375px
-- `lg` buttons measure exactly **56px**; accent resolves to `rgb(29, 180, 132)`
+- `lg` buttons measure exactly **56px**
 - Build green (15 routes) · lint clean · 32/32 tests
 
 ### Not done
@@ -154,9 +185,7 @@ These are live at the owner's direction (supplied in the redesign brief) but are
 - About team section + headshots
 - Newsletter signup
 - Quote-builder step progress indicator
-- **Real Lighthouse run** — never measured. Only proxies known: 87.3kB shared
-  JS, all routes static, CLS 0.036, compositor-only animation. Treat any score
-  claim as unmeasured until a run exists.
+- Component tests (see below)
 - Component tests — all 32 tests cover pricing maths. Four bugs this cycle
   passed both typecheck and lint (two server/client boundary breaks, dead
   deep-links, stale scroll offsets). That's the gap worth closing.
@@ -179,3 +208,14 @@ These are live at the owner's direction (supplied in the redesign brief) but are
 - **`getBoundingClientRect()` ignores clipping.** It returns the layout box even
   when an ancestor clips the element. Check against the nearest clipping
   ancestor — that's what caught the `/pricing` prices being cut off.
+- **The brand green cannot carry white text.** `#1DB584` with white is
+  **2.65:1** — it fails AA badly. `--accent` is therefore `#14855B`
+  (emerald-700, 4.63:1 both ways). Use `emerald-500` for gradients, large
+  numerals and decoration; never for small text or a solid fill behind white.
+- **`<dl>` is strict.** Children must be `<dt>`/`<dd>`, optionally grouped in a
+  plain `<div>` — no icons or extra wrappers inside the group — and `<dt>` must
+  come first. Use `flex-col-reverse` to show the value above the label while
+  keeping the required DOM order.
+- **Heading level is contextual.** `FaqAccordion` takes `headingLevel`: 2 when
+  it sits under the page `<h1>` (`/faq`), 3 when a section `<h2>` precedes it
+  (`/pricing`). Skipping a level fails axe.

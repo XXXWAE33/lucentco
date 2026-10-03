@@ -6,8 +6,8 @@ type Variant = "primary" | "accent" | "secondary" | "outline" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 /*
- * Design system: 24px pill radius, 16px/600 label, 56px tall at `lg`.
- * Hover lifts 2px and deepens to elevation-2; focus ring is the brand green.
+ * Design system: 10px radius, 16px/600 label, 56px tall at `lg`.
+ * Flat fills that deepen on hover; focus ring is the brand green.
  */
 const base =
   "inline-flex items-center justify-center gap-2 rounded-btn font-semibold whitespace-nowrap " +
@@ -17,13 +17,13 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-sage-700 text-white shadow-elevation-1 hover:bg-sage-800 hover:shadow-elevation-2 hover:-translate-y-0.5",
+    "bg-sage-700 text-white hover:bg-sage-800",
   accent:
-    "bg-accent text-accent-foreground shadow-elevation-1 hover:bg-emerald-600 hover:shadow-elevation-2 hover:-translate-y-0.5",
+    "bg-sage-900 text-gold-200 hover:bg-sage-800 hover:text-gold-100",
   secondary: "bg-sage-100 text-sage-800 hover:bg-sage-200",
   outline:
-    "border border-sage-300 bg-transparent text-sage-800 hover:border-emerald-500 hover:bg-sage-50",
-  ghost: "bg-transparent text-emerald-700 hover:bg-sage-50",
+    "border border-sage-800 bg-background text-sage-900 hover:bg-sage-50",
+  ghost: "bg-transparent text-gold-700 hover:bg-sage-50",
 };
 
 const sizes: Record<Size, string> = {

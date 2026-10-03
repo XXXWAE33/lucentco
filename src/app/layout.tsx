@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { inter, poppins } from "./fonts";
 import { site } from "@/lib/site";
-import { cn } from "@/lib/utils";
 import {
   Header,
   Footer,
@@ -81,7 +79,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en-AU" className={cn(inter.variable, poppins.variable)}>
+    <html lang="en-AU">
       <body className="flex min-h-screen flex-col">
         <script
           type="application/ld+json"

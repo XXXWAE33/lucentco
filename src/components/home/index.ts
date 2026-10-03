@@ -1,6 +1,4 @@
-export { Atmosphere, HeroGlow } from "./atmosphere";
 export { Hero } from "./hero";
-export { HeroVisual } from "./hero-visual";
 export { TrustStrip } from "./trust-strip";
 export { BookWithConfidence } from "./book-with-confidence";
 export { ServicesOverview } from "./services-overview";

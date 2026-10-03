@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * SINGLE SOURCE OF TRUTH for all Lucent Clean Co. pricing.
+ * SINGLE SOURCE OF TRUTH for all Velora Cleaning Brisbane pricing.
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * Both the marketing UI and the AI quoting engine import from this file.

@@ -17,7 +17,9 @@ export const hero = {
   // sub-line instead, so no locality signal is lost.
   eyebrow: "Carpet & upholstery specialists",
   /** Rendered as two separate lines — guaranteed to break the same way at 375px. */
-  headline: { lineOne: "Every fibre,", lineTwo: "properly clean." },
+  headline: { lineOne: "Hello,", lineTwo: "Brisbane." },
+  /** Brand slogan — sits directly under the headline. */
+  slogan: "Why replace when you can revive?",
   subline:
     "Specialist carpet, upholstery, mattress and curtain cleaning across Brisbane — with fixed prices you can check before you call.",
   // Hash selects the tool: #instant-quote = single service, which is what
@@ -31,6 +33,26 @@ export const hero = {
  * Hero photograph. This is the LCP element — it is loaded with `priority`.
  * See the IMAGE MANIFEST at the bottom of this file.
  */
+/**
+ * Floating tags around the hero photo. `x`/`y` are % offsets of the tag's
+ * anchor against the photo card; `tone` picks a palette tint.
+ */
+export type HeroTag = {
+  label: string;
+  tone: "emerald" | "sage" | "mint" | "teal";
+  x: number;
+  y: number;
+};
+
+export const heroTags: HeroTag[] = [
+  { label: "Carpets", tone: "emerald", x: -8, y: 12 },
+  { label: "Rugs", tone: "mint", x: -20, y: 48 },
+  { label: "Mattresses", tone: "sage", x: -4, y: 80 },
+  { label: "Couches", tone: "teal", x: 96, y: 16 },
+  { label: "Non-toxic", tone: "emerald", x: 88, y: 52 },
+  { label: "Curtains", tone: "mint", x: 104, y: 76 },
+];
+
 export const heroImage: ServiceImageSlot = {
   src: "/hero/hero-clean.jpg",
   alt: "Close detail of a carpet or upholstery surface part-way through cleaning, showing the contrast between cleaned and uncleaned fibre",

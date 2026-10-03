@@ -1,117 +1,122 @@
-import { MapPin, ArrowRight } from "lucide-react";
-import { Section, SectionHeading, Button, Badge } from "@/components/ui";
+import { ArrowRight } from "lucide-react";
+import { Section, SectionHeading, Button } from "@/components/ui";
 import { Reveal } from "@/components/motion";
 import { serviceSuburbs } from "@/lib/site";
+import { SuburbChecker } from "./suburb-checker";
 
-/** How many suburbs orbit the hub before the graphic gets cluttered. */
-const ORBIT_COUNT = 6;
-const orbitSuburbs = serviceSuburbs.slice(0, ORBIT_COUNT);
-
-/** Deterministic point on a circle — pure math, safe to compute at render time. */
-function orbitPoint(index: number, total: number, radiusPct: number) {
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-  return {
-    left: `${50 + radiusPct * Math.cos(angle)}%`,
-    top: `${50 + radiusPct * Math.sin(angle)}%`,
-  };
-}
-
+/**
+ * Service area — copy on the left, one card on the right: a stylised
+ * riverside header (abstract, not a map — no suburb is placed geographically)
+ * over a live suburb checker that also lists every suburb we cover.
+ */
 export function ServiceArea() {
   return (
     <Section>
-      <div className="grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
-        {/* Centred on mobile like every other section; left from lg. */}
+      <div className="grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
         <div className="text-center lg:text-left">
           <SectionHeading
             eyebrow="Where we clean"
             title="Local crews, right across Brisbane"
-            intro="We focus on the inner-city and riverside suburbs so our cleaners spend less time driving and more time perfecting your home. Not listed? We're likely nearby — just ask."
+            intro="We focus on the inner-city and riverside suburbs so our cleaners spend less time driving and more time perfecting your home."
             className="items-center text-center lg:items-start lg:text-left"
           />
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:mt-8 lg:justify-start">
+          <div className="mt-6 hidden flex-wrap items-center gap-4 sm:mt-8 lg:flex">
             <Button href="/contact" variant="primary">
-              Check your suburb <ArrowRight className="h-4 w-4" />
+              Book a clean <ArrowRight className="h-4 w-4" />
             </Button>
-            <span className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              </span>
-              Cleaners available this week
-            </span>
+            <Availability />
           </div>
         </div>
 
-        <div>
-          {/*
-            Orbit graphic — a representative sample of suburbs (not all 18;
-            past ~6 nodes the circle stops reading as a diagram and starts
-            reading as clutter). The full list stays below, unabridged.
-          */}
-          <Reveal>
-            <div className="relative mx-auto aspect-square w-full max-w-[19rem] sm:max-w-xs">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 100 100"
-                className="absolute inset-0 h-full w-full text-sage-300/60"
-              >
-                <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 3" />
-                {orbitSuburbs.map((_, i) => {
-                  const p = orbitPoint(i, orbitSuburbs.length, 34);
-                  return (
-                    <line
-                      key={i}
-                      x1="50"
-                      y1="50"
-                      x2={parseFloat(p.left)}
-                      y2={parseFloat(p.top)}
-                      stroke="currentColor"
-                      strokeWidth="0.5"
-                    />
-                  );
-                })}
-              </svg>
-
-              {/* Hub */}
-              <div className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-sage-900 text-center shadow-lifted sm:h-20 sm:w-20">
-                <MapPin className="h-4 w-4 text-emerald-400 sm:h-5 sm:w-5" />
-                <span className="mt-0.5 text-[0.5625rem] font-semibold text-white sm:text-xs">
-                  Brisbane
-                </span>
-              </div>
-
-              {/* Orbiting suburb nodes */}
-              {orbitSuburbs.map((suburb, i) => {
-                const p = orbitPoint(i, orbitSuburbs.length, 34);
-                return (
-                  <span
-                    key={suburb}
-                    style={{ left: p.left, top: p.top }}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-border bg-card px-2.5 py-1 text-[0.6875rem] font-medium text-ink-700 shadow-soft sm:px-3 sm:py-1.5 sm:text-xs"
-                  >
-                    {suburb}
-                  </span>
-                );
-              })}
-            </div>
-          </Reveal>
-
-          {/* Full list — every suburb, unabridged. */}
-          <div className="mt-6 rounded-3xl border border-border bg-mint-50/70 p-5 shadow-soft sm:rounded-4xl sm:p-8">
-            <div className="mb-4 flex items-center justify-center gap-2 text-sm font-semibold text-sage-800 sm:mb-5 lg:justify-start">
-              <MapPin className="h-4 w-4 text-emerald-600" />
-              {serviceSuburbs.length} suburbs &amp; growing
-            </div>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5 lg:justify-start">
-              {serviceSuburbs.map((suburb) => (
-                <Badge key={suburb} tone="sage" className="text-xs sm:text-sm">
-                  {suburb}
-                </Badge>
-              ))}
+        <Reveal>
+          <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-card sm:rounded-4xl">
+            <RiverHeader />
+            <div className="p-4 sm:p-6">
+              <SuburbChecker />
             </div>
           </div>
-        </div>
+          <div className="mt-4 flex justify-center lg:hidden">
+            <Availability />
+          </div>
+        </Reveal>
       </div>
     </Section>
+  );
+}
+
+function Availability() {
+  return (
+    <span className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700">
+      <span className="relative flex h-2.5 w-2.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
+        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+      </span>
+      Cleaners available this week
+    </span>
+  );
+}
+
+/** Dark header: a winding river line with glowing stops, plus the headline stat. */
+function RiverHeader() {
+  const stops = [
+    { x: 40, y: 92 },
+    { x: 92, y: 58 },
+    { x: 150, y: 74 },
+    { x: 205, y: 44 },
+    { x: 262, y: 66 },
+    { x: 318, y: 38 },
+    { x: 372, y: 60 },
+  ];
+  return (
+    <div className="relative overflow-hidden bg-sage-900 px-5 pb-4 pt-5 text-white sm:px-6">
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full bg-emerald-500/25 blur-3xl"
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-20 left-10 h-40 w-40 rounded-full bg-gold-400/20 blur-3xl"
+      />
+
+      <div className="relative flex items-end justify-between gap-4">
+        <div>
+          <p className="font-display text-4xl font-semibold leading-none tabular-nums text-gold-300">
+            {serviceSuburbs.length}
+          </p>
+          <p className="mt-1 text-xs text-mint-200/80">suburbs covered &amp; growing</p>
+        </div>
+        <p className="text-right text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-gold-300">
+          Inner-city
+          <br />
+          &amp; riverside
+        </p>
+      </div>
+
+      <svg viewBox="0 0 420 120" aria-hidden="true" className="relative mt-2 h-auto w-full">
+        <path
+          d="M -10 100 C 40 100, 60 50, 100 58 S 150 88, 190 60 S 240 30, 270 62 S 330 50, 350 40 S 400 50, 430 66"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="14"
+          strokeLinecap="round"
+          className="text-emerald-500/15"
+        />
+        <path
+          d="M -10 100 C 40 100, 60 50, 100 58 S 150 88, 190 60 S 240 30, 270 62 S 330 50, 350 40 S 400 50, 430 66"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeDasharray="1 7"
+          strokeLinecap="round"
+          className="text-mint-200/60"
+        />
+        {stops.map((s, i) => (
+          <g key={i}>
+            <circle cx={s.x} cy={s.y} r="9" className="fill-emerald-400/15" />
+            <circle cx={s.x} cy={s.y} r="3.5" className="fill-emerald-400" />
+          </g>
+        ))}
+      </svg>
+    </div>
   );
 }

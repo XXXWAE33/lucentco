@@ -97,32 +97,41 @@ function StatBlock({ stat }: { stat: TrustStat }) {
   const shown = stat.value ?? (IS_DEV ? stat.devPreviewValue : null);
 
   return (
-    <div className="flex flex-col items-center text-center lg:flex-row lg:items-center lg:gap-2.5 lg:text-left">
-      {/* Icon costs horizontal room three-across at 375px — desktop only. */}
-      <Icon
-        className="hidden h-5 w-5 shrink-0 text-emerald-600/80 lg:block"
-        aria-hidden="true"
-        strokeWidth={1.75}
-      />
-      <div className="min-w-0">
-        <dd className="font-display text-lg font-semibold leading-none text-foreground sm:text-xl lg:text-2xl">
-          {shown === null ? (
-            <span aria-label="Figure to be confirmed" className="text-ink-300">
-              —
-            </span>
-          ) : (
-            <CountUp
-              value={shown}
-              decimals={stat.decimals ?? 0}
-              prefix={stat.prefix ?? ""}
-              suffix={stat.suffix ?? ""}
-            />
-          )}
-        </dd>
-        <dt className="mt-1 text-[0.6875rem] leading-tight text-muted-foreground sm:text-xs lg:text-sm">
-          {stat.label}
-        </dt>
-      </div>
+    /*
+     * A <dl> may only contain <dt>/<dd> pairs, optionally grouped in a plain
+     * <div>. Previously this wrapper also held the icon and a second nested
+     * div, and emitted <dd> BEFORE <dt> — both are spec violations that axe
+     * flags (weight 7 each).
+     *
+     * Fixed by: (1) the group div now contains only <dt> then <dd>, in that
+     * order — the label is the term, the figure is its description; (2) the
+     * icon moved inside <dd>; (3) `flex-col-reverse` renders the figure above
+     * the label while keeping the DOM order the spec requires.
+     */
+    <div className="flex min-w-0 flex-col-reverse items-center text-center lg:items-start lg:text-left">
+      <dt className="mt-1 text-[0.6875rem] leading-tight text-muted-foreground sm:text-xs lg:text-sm">
+        {stat.label}
+      </dt>
+      <dd className="flex items-center gap-2.5 font-display text-lg font-semibold leading-none text-foreground sm:text-xl lg:text-2xl">
+        {/* Icon costs horizontal room three-across at 375px — desktop only. */}
+        <Icon
+          className="hidden h-5 w-5 shrink-0 text-emerald-700 lg:block"
+          aria-hidden="true"
+          strokeWidth={1.75}
+        />
+        {shown === null ? (
+          <span aria-label="Figure to be confirmed" className="text-ink-300">
+            —
+          </span>
+        ) : (
+          <CountUp
+            value={shown}
+            decimals={stat.decimals ?? 0}
+            prefix={stat.prefix ?? ""}
+            suffix={stat.suffix ?? ""}
+          />
+        )}
+      </dd>
     </div>
   );
 }

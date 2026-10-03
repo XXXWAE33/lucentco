@@ -22,12 +22,21 @@ import type { FaqItem } from "@/config/faq";
 export function FaqAccordion({
   items,
   className,
+  headingLevel = 3,
 }: {
   items: FaqItem[];
   className?: string;
+  /**
+   * Heading level for each question. Must continue the page's outline without
+   * skipping a level: use 2 where the accordion sits directly under the page
+   * <h1> (e.g. /faq), 3 where a section <h2> precedes it (e.g. /pricing).
+   * Skipping a level fails axe's heading-order rule.
+   */
+  headingLevel?: 2 | 3;
 }) {
   const baseId = useId();
   const [open, setOpen] = useState<Set<string>>(new Set());
+  const Heading = (headingLevel === 2 ? "h2" : "h3") as "h2" | "h3";
 
   const toggle = (id: string) =>
     setOpen((prev) => {
@@ -43,7 +52,7 @@ export function FaqAccordion({
         No questions match that search. Try a different word, or{" "}
         <a
           href="/contact"
-          className="font-medium text-emerald-700 underline-offset-4 hover:underline"
+          className="font-medium text-gold-600 underline-offset-4 hover:underline"
         >
           ask us directly
         </a>
@@ -63,11 +72,11 @@ export function FaqAccordion({
           <div
             key={item.id}
             className={cn(
-              "overflow-hidden rounded-card border bg-card transition-colors duration-200",
-              isOpen ? "border-emerald-200" : "border-border hover:border-sage-300",
+              "overflow-hidden rounded-2xl border bg-card transition-all duration-200",
+              isOpen ? "border-gold-300 shadow-soft" : "border-border hover:border-gold-200",
             )}
           >
-            <h3>
+            <Heading>
               <button
                 type="button"
                 id={buttonId}
@@ -77,15 +86,22 @@ export function FaqAccordion({
                 className="flex min-h-[3.5rem] w-full items-center justify-between gap-4 px-5 py-4 text-left font-medium text-foreground transition-colors hover:bg-sage-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
               >
                 <span className="text-[0.9375rem] sm:text-base">{item.q}</span>
-                <Plus
+                <span
                   aria-hidden="true"
                   className={cn(
-                    "h-5 w-5 shrink-0 text-emerald-600 transition-transform duration-300 ease-out-soft",
-                    isOpen && "rotate-45",
+                    "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300",
+                    isOpen ? "bg-sage-800 text-gold-300" : "bg-gold-50 text-gold-600 ring-1 ring-inset ring-gold-200",
                   )}
-                />
+                >
+                  <Plus
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-300 ease-out-soft",
+                      isOpen && "rotate-45",
+                    )}
+                  />
+                </span>
               </button>
-            </h3>
+            </Heading>
 
             <div
               id={panelId}

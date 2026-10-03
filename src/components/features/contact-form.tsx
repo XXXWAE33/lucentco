@@ -25,7 +25,7 @@ type FieldErrors = Partial<Record<FieldName, string>>;
 /* text-base (16px) is deliberate: anything smaller makes iOS zoom the page
    when an input is focused. */
 const fieldClass =
-  "h-12 w-full rounded-2xl border border-border bg-background px-4 text-base text-foreground placeholder:text-ink-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[invalid=true]:border-rose-400 aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-rose-300";
+  "h-12 w-full rounded-xl border border-border bg-sage-50/40 px-4 text-base text-foreground transition-colors placeholder:text-ink-400 hover:border-gold-300 focus:border-gold-400 focus:bg-background focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-400/15 aria-[invalid=true]:border-rose-400 aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-rose-300";
 
 /** Same rules the API enforces — mirrored here so errors appear inline. */
 function validateField(field: FieldName, value: string): string | null {
@@ -107,9 +107,9 @@ export function ContactForm() {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center rounded-3xl border border-emerald-200 bg-emerald-50/60 p-10 text-center"
+        className="flex flex-col items-center justify-center rounded-3xl border border-border bg-card p-10 text-center shadow-lifted"
       >
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-sage-900 text-gold-300">
           <CheckCircle2 className="h-7 w-7" />
         </span>
         <h3 className="mt-4 font-display text-xl font-semibold text-foreground">
@@ -148,8 +148,22 @@ export function ContactForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-3xl border border-border bg-card p-5 shadow-card sm:p-8"
+      className="rounded-3xl border border-border bg-card p-5 shadow-lifted sm:p-8"
     >
+      <div className="mb-6 flex items-start justify-between gap-4 border-b border-border pb-5">
+        <div>
+          <h2 className="font-display text-xl font-semibold text-foreground sm:text-2xl">
+            Send an enquiry
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            We reply within one business hour.
+          </p>
+        </div>
+        <span className="hidden shrink-0 rounded-full bg-gold-50 px-3 py-1 text-xs font-semibold text-gold-700 ring-1 ring-inset ring-gold-200 sm:inline-flex">
+          No obligation
+        </span>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
@@ -241,7 +255,7 @@ export function ContactForm() {
           onBlur={onBlurValidate}
           aria-invalid={!!fieldErrors.message}
           aria-describedby={fieldErrors.message ? "message-error" : undefined}
-          className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-ink-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-[invalid=true]:border-rose-400 aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-rose-300"
+          className="w-full rounded-xl border border-border bg-sage-50/40 px-4 py-3 text-base text-foreground transition-colors placeholder:text-ink-400 hover:border-gold-300 focus:border-gold-400 focus:bg-background focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-400/15 aria-[invalid=true]:border-rose-400 aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-rose-300"
         />
         <FieldError id="message-error" message={fieldErrors.message} />
       </div>
@@ -257,7 +271,7 @@ export function ContactForm() {
         variant="accent"
         size="lg"
         disabled={status === "submitting"}
-        className={cn("mt-6 w-full sm:w-auto")}
+        className={cn("mt-6 w-full")}
       >
         {status === "submitting" ? (
           <>
@@ -269,7 +283,7 @@ export function ContactForm() {
           </>
         )}
       </Button>
-      <p className="mt-3 text-xs text-muted-foreground">
+      <p className="mt-3 text-center text-xs text-muted-foreground">
         We&apos;ll only use your details to respond to your enquiry.
       </p>
     </form>

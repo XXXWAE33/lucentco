@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Layers } from "lucide-react";
-import { Button } from "@/components/ui";
 import { cn, formatAud } from "@/lib/utils";
 import {
   calculateService,
@@ -46,19 +46,19 @@ export function ServicePriceCard({ service }: { service: ServiceDef }) {
   return (
     <div
       id={service.id}
-      className="flex h-full scroll-mt-[calc(var(--announce-h)+var(--header-h)+1rem)] flex-col overflow-hidden rounded-4xl border border-border bg-card shadow-card transition-shadow duration-300 hover:shadow-lifted"
+      className="group/card flex h-full scroll-mt-[calc(var(--announce-h)+var(--header-h)+5rem)] flex-col overflow-hidden rounded-4xl border border-border bg-card shadow-card transition-all duration-300 hover:border-gold-300 hover:shadow-lifted"
     >
       <div className="flex flex-1 flex-col p-6 sm:p-7">
         {/* Identity */}
         <div className="flex items-start gap-4">
-          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gold-50 text-gold-600 ring-1 ring-inset ring-gold-200 transition-colors duration-300 group-hover/card:bg-gold-400 group-hover/card:text-white group-hover/card:ring-gold-400">
             <Icon className="h-6 w-6" />
           </span>
           <div className="min-w-0">
             <h3 className="font-display text-xl font-semibold text-foreground">
               {service.name}
             </h3>
-            <p className="text-sm font-medium text-emerald-700">
+            <p className="text-sm font-medium text-gold-600">
               {service.tagline}
             </p>
           </div>
@@ -87,7 +87,7 @@ export function ServicePriceCard({ service }: { service: ServiceDef }) {
                   {active && (
                     <motion.span
                       layoutId={`mode-pill-${service.id}`}
-                      className="absolute inset-0 -z-10 rounded-full bg-sage-700"
+                      className="absolute inset-0 -z-10 rounded-full bg-sage-800"
                       transition={{ type: "spring", stiffness: 400, damping: 32 }}
                     />
                   )}
@@ -135,7 +135,7 @@ export function ServicePriceCard({ service }: { service: ServiceDef }) {
               key={inc}
               className="flex items-start gap-2.5 text-sm text-ink-700"
             >
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
               {inc}
             </li>
           ))}
@@ -143,10 +143,14 @@ export function ServicePriceCard({ service }: { service: ServiceDef }) {
       </div>
 
       {/* Live price */}
-      <div className="border-t border-border bg-sage-50/70 p-6 sm:p-7">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="relative overflow-hidden bg-sage-900 p-6 text-white sm:p-7">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-gold-400/20 blur-3xl"
+        />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-wider text-gold-300">
               {empty ? "Select a size" : "Your price"}
             </p>
             <motion.div
@@ -154,20 +158,23 @@ export function ServicePriceCard({ service }: { service: ServiceDef }) {
               initial={reduce ? false : { opacity: 0.4, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, ease: EASE }}
-              className="font-display text-3xl font-semibold text-foreground sm:text-4xl"
+              className="font-display text-4xl font-semibold tabular-nums text-white"
             >
               {empty ? "—" : formatAud(quote.total ?? 0)}
             </motion.div>
           </div>
-          <Button
+          <Link
             href={`/contact?service=${encodeURIComponent(service.name)}`}
-            variant="accent"
+            className="group inline-flex h-12 items-center gap-2 rounded-full bg-white pl-5 pr-1.5 text-sm font-semibold text-sage-900 transition-colors hover:bg-gold-50"
           >
-            Book this <ArrowRight className="h-4 w-4" />
-          </Button>
+            Book this
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white transition-transform group-hover:translate-x-0.5">
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </Link>
         </div>
         {quote.minimumApplied && (
-          <p className="mt-3 text-xs font-medium text-emerald-700">
+          <p className="relative mt-3 text-xs font-medium text-mint-200/80">
             {quote.note}
           </p>
         )}
@@ -239,7 +246,7 @@ function TierLadder({
             className={cn(
               "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-colors",
               chip.active
-                ? "border-accent bg-accent/10 text-emerald-800"
+                ? "border-gold-400 bg-gold-50 text-gold-800"
                 : "border-border text-muted-foreground",
             )}
           >

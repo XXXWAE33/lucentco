@@ -39,7 +39,7 @@ export function InspectionPanel() {
   const blindPricing = getMode("blind").pricing as InspectionPricing;
 
   return (
-    <div className="overflow-hidden rounded-4xl bg-sage-900 text-mint-100">
+    <div className="overflow-hidden rounded-4xl bg-sage-900 text-mint-100 ring-1 ring-inset ring-gold-400/20">
       <div className="grid gap-10 p-6 sm:p-10 lg:grid-cols-2 lg:gap-14">
         <BlindQuote pricing={blindPricing} />
 
@@ -61,16 +61,16 @@ function BlindQuote({ pricing }: { pricing: InspectionPricing }) {
   const band = findDiscountBand(pricing.discountBands, qty);
 
   return (
-    <div id="blind" className="scroll-mt-[calc(var(--announce-h)+var(--header-h)+1rem)]">
+    <div id="blind" className="scroll-mt-[calc(var(--announce-h)+var(--header-h)+5rem)]">
       <div className="flex items-start gap-4">
-        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
+        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gold-400/15 text-gold-300 ring-1 ring-inset ring-gold-400/30">
           <Blinds className="h-6 w-6" />
         </span>
         <div>
           <h3 className="font-display text-2xl font-semibold text-white">
             Blind cleaning
           </h3>
-          <p className="text-sm font-medium text-emerald-300">
+          <p className="text-sm font-medium text-gold-300">
             Assessed on inspection
           </p>
         </div>
@@ -84,7 +84,7 @@ function BlindQuote({ pricing }: { pricing: InspectionPricing }) {
 
       {/* Value story — the discount ladder, up front */}
       <div className="mt-6">
-        <p className="text-xs font-semibold uppercase tracking-wider text-mint-200/60">
+        <p className="text-xs font-semibold uppercase tracking-wider text-mint-200/80">
           Volume pricing
         </p>
         <div className="mt-3 space-y-2">
@@ -99,7 +99,7 @@ function BlindQuote({ pricing }: { pricing: InspectionPricing }) {
                 className={cn(
                   "flex items-center justify-between gap-4 rounded-2xl border px-4 py-3 transition-colors",
                   active
-                    ? "border-emerald-400/60 bg-emerald-400/10"
+                    ? "border-gold-400/60 bg-gold-400/10"
                     : "border-white/10 bg-white/[0.03]",
                 )}
               >
@@ -112,15 +112,15 @@ function BlindQuote({ pricing }: { pricing: InspectionPricing }) {
                   >
                     {b.label}
                   </p>
-                  <p className="text-xs text-mint-200/70">{b.detail}</p>
+                  <p className="text-xs text-mint-200/85">{b.detail}</p>
                 </div>
                 <span
                   className={cn(
                     "shrink-0 rounded-full px-3 py-1 text-xs font-semibold",
                     b.percent > 0
                       ? active
-                        ? "bg-emerald-400 text-sage-900"
-                        : "bg-white/10 text-emerald-300"
+                        ? "bg-gold-400 text-sage-900"
+                        : "bg-white/10 text-gold-300"
                       : "bg-white/10 text-mint-200/80",
                   )}
                 >
@@ -136,7 +136,7 @@ function BlindQuote({ pricing }: { pricing: InspectionPricing }) {
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
         <div>
           <p className="text-sm font-medium text-white">How many blinds?</p>
-          <p className="text-xs text-mint-200/70">
+          <p className="text-xs text-mint-200/85">
             {band && band.percent > 0
               ? `You'd qualify for ${band.percent}% off`
               : "Standard per-blind rate applies"}
@@ -153,8 +153,8 @@ function BlindQuote({ pricing }: { pricing: InspectionPricing }) {
       </div>
 
       {pricing.minimumCharge !== null && (
-        <p className="mt-3 flex items-center gap-2 text-xs text-mint-200/70">
-          <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-300" />
+        <p className="mt-3 flex items-center gap-2 text-xs text-mint-200/85">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-gold-300" />
           Minimum service charge of ${pricing.minimumCharge} applies to any blind
           job.
         </p>
@@ -200,17 +200,17 @@ function FloodCard({
   return (
     <div
       id={service.id}
-      className="flex scroll-mt-[calc(var(--announce-h)+var(--header-h)+1rem)] flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6"
+      className="flex scroll-mt-[calc(var(--announce-h)+var(--header-h)+5rem)] flex-col rounded-3xl border border-white/10 bg-white/[0.04] p-6"
     >
       <div className="flex items-start gap-4">
-        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
+        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gold-400/15 text-gold-300 ring-1 ring-inset ring-gold-400/30">
           <Droplets className="h-6 w-6" />
         </span>
         <div>
           <h3 className="font-display text-xl font-semibold text-white">
             {service.name}
           </h3>
-          <p className="text-sm font-medium text-emerald-300">
+          <p className="text-sm font-medium text-gold-300">
             {service.tagline}
           </p>
         </div>
@@ -226,7 +226,7 @@ function FloodCard({
             key={reason}
             className="flex items-start gap-2.5 text-sm text-mint-100/90"
           >
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" />
             {reason}
           </li>
         ))}

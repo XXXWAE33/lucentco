@@ -126,7 +126,7 @@ export function QuoteOnlyCard({
           </ul>
 
           <div className="mt-7 border-t border-white/10 pt-6">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-mint-200/60">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-mint-200/80">
               How we do it
             </p>
             <ProcessTimeline steps={process} tone="dark" />

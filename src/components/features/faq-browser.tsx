@@ -53,7 +53,7 @@ export function FaqBrowser() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search questions…"
           /* text-base prevents iOS zooming the page on focus. */
-          className="h-12 w-full rounded-input border border-border bg-background pl-11 pr-11 text-base text-foreground placeholder:text-ink-400 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-accent/20"
+          className="h-12 w-full rounded-2xl border border-border bg-sage-50/50 pl-11 pr-11 text-base text-foreground transition-colors placeholder:text-ink-400 hover:border-gold-300 focus:bg-background focus-visible:border-gold-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-400/15"
         />
         {query && (
           <button
@@ -72,7 +72,7 @@ export function FaqBrowser() {
       <div
         role="group"
         aria-label="Filter by category"
-        className="no-scrollbar -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:px-0"
+        className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0"
       >
         {filters.map((f) => {
           const active = f === filter;
@@ -83,10 +83,10 @@ export function FaqBrowser() {
               onClick={() => setFilter(f)}
               aria-pressed={active}
               className={cn(
-                "inline-flex h-11 shrink-0 items-center rounded-btn border px-4 text-sm font-medium transition-colors",
+                "inline-flex h-10 shrink-0 items-center rounded-full border px-4 text-sm font-medium transition-colors",
                 active
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-border bg-card text-ink-600 hover:border-sage-300 hover:bg-sage-50",
+                  ? "border-sage-800 bg-sage-800 text-white"
+                  : "border-border bg-card text-ink-600 hover:border-gold-300 hover:bg-gold-50 hover:text-gold-700",
               )}
             >
               {f}
@@ -101,7 +101,9 @@ export function FaqBrowser() {
         {query && ` matching “${query}”`}
       </p>
 
-      <FaqAccordion items={results} className="mt-4" />
+      {/* h2: on /faq the accordion sits directly under the page <h1>, so
+          questions must be level 2 — jumping to h3 fails heading-order. */}
+      <FaqAccordion items={results} className="mt-4" headingLevel={2} />
     </div>
   );
 }

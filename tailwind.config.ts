@@ -4,7 +4,7 @@ const config: Config = {
   darkMode: ["class"],
   safelist: [
     {
-      pattern: /bg-(sage|emerald|mint|ink)-(50|100|200|300|400|500|600|700|800|900)/,
+      pattern: /bg-(sage|emerald|mint|ink|gold)-(50|100|200|300|400|500|600|700|800|900)/,
     },
   ],
   content: [
@@ -28,7 +28,15 @@ const config: Config = {
     extend: {
       colors: {
         /* ────────────────────────────────────────────────────────────────
-         * BRAND SCALES — retuned 2026-07-29 to the supplied design system.
+         * BRAND SCALES — retuned 2026-10-02 to the Velora gold identity.
+         *
+         *   sage    → 50–300 pale sage green (light section backgrounds,
+         *             tints, hovers); 400–950 warm charcoal (dark surfaces)
+         *   emerald → bronze-gold (CTAs; 500+ carries white text at AA)
+         *   mint    → champagne cream (light tints, light text on dark)
+         *   gold    → the logo gold itself (400 = logo)
+         *
+         * Historical note — previous anchors (2026-07-29 green system):
          *
          * Anchor values from the brief:
          *   Primary Green  #1DB584  → emerald-500
@@ -43,43 +51,56 @@ const config: Config = {
          * in one place.
          * ──────────────────────────────────────────────────────────────── */
         sage: {
-          50: "#f8fbfa",
-          100: "#e8f0ed",
-          200: "#cfe0d9",
-          300: "#a9c7bc",
-          400: "#7ba697",
-          500: "#55897a",
-          600: "#3e6e60",
-          700: "#2d5f4f",
-          800: "#264e42",
-          900: "#1f4036",
-          950: "#102520",
+          50: "#eaf1ea",
+          100: "#dfe9e0",
+          200: "#cbdacd",
+          300: "#adbfb0",
+          400: "#a89d8b",
+          500: "#81776a",
+          600: "#61594e",
+          700: "#48423a",
+          800: "#312d28",
+          900: "#211e1b",
+          950: "#141210",
         },
         emerald: {
-          50: "#ecfbf5",
-          100: "#d2f5e8",
-          200: "#a8ebd3",
-          300: "#6fdcb8",
-          400: "#3fc79c",
-          500: "#1db584",
-          600: "#19a770",
-          700: "#14855b",
-          800: "#126a4a",
-          900: "#10573e",
-          950: "#063124",
+          50: "#fbf7ee",
+          100: "#f5ebd5",
+          200: "#ebd6ab",
+          300: "#ddbd7f",
+          400: "#c9a35f",
+          500: "#8e6c31",
+          600: "#7a5c29",
+          700: "#654c22",
+          800: "#503c1b",
+          900: "#3d2e15",
+          950: "#241b0c",
+        },
+        /* Brand gold — sampled from the official Velora logo (400 = logo). */
+        gold: {
+          50: "#fbf8f1",
+          100: "#f5eddb",
+          200: "#ebdbb6",
+          300: "#ddc490",
+          400: "#c6a76b",
+          500: "#b08f52",
+          600: "#937540",
+          700: "#775e34",
+          800: "#5c4829",
+          900: "#43351f",
         },
         mint: {
-          50: "#f4fcf8",
-          100: "#e4f7ee",
-          200: "#c7eedd",
-          300: "#9de0c6",
-          400: "#6acda9",
-          500: "#3eb48c",
-          600: "#2c9273",
-          700: "#25755e",
-          800: "#205e4d",
-          900: "#1b4d40",
-          950: "#0c2b23",
+          50: "#fdfbf7",
+          100: "#f7f1e6",
+          200: "#ecdfc8",
+          300: "#dcc79f",
+          400: "#c9ab72",
+          500: "#b08f52",
+          600: "#937540",
+          700: "#775e34",
+          800: "#5c4829",
+          900: "#43351f",
+          950: "#2a2114",
         },
         /* Neutrals — Gray 100/500/700/900 anchors come from the brief. */
         ink: {
@@ -125,10 +146,16 @@ const config: Config = {
         border: "hsl(var(--border) / <alpha-value>)",
         ring: "hsl(var(--ring) / <alpha-value>)",
       },
+      /* Lighter type: Circular ships 400/500/700 only, so 600 was snapping to
+         Bold. Mapping semibold + bold onto Medium thins every heading at once. */
+      fontWeight: {
+        semibold: "500",
+        bold: "500",
+      },
       fontFamily: {
-        /* Body = Inter, headings = Poppins, per the design system. */
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["var(--font-poppins)", "var(--font-inter)", "sans-serif"],
+        /* Circular Pro for everything — body, UI and headings (@font-face in globals.css). */
+        sans: ["\"Circular Pro\"", "system-ui", "sans-serif"],
+        display: ["\"Circular Pro\"", "system-ui", "sans-serif"],
       },
       fontSize: {
         /*
@@ -164,9 +191,9 @@ const config: Config = {
         content: "1240px",
       },
       borderRadius: {
-        /* Inputs 8px · buttons 24px (pill) · cards 16px · containers 20px. */
+        /* Inputs 8px · buttons 10px · cards 16px · containers 20px. */
         input: "0.5rem",
-        btn: "1.5rem",
+        btn: "0.625rem",
         card: "1rem",
         xl: "0.875rem",
         "2xl": "1.25rem",
@@ -188,7 +215,7 @@ const config: Config = {
         soft: "0 2px 8px rgba(0, 0, 0, 0.06)",
         card: "0 4px 12px rgba(0, 0, 0, 0.08)",
         lifted: "0 8px 24px rgba(0, 0, 0, 0.12)",
-        glow: "0 0 0 1px rgba(29, 181, 132, 0.18), 0 8px 24px -4px rgba(29, 181, 132, 0.32)",
+        glow: "0 0 0 1px rgba(198, 167, 107, 0.25), 0 8px 24px -4px rgba(198, 167, 107, 0.35)",
         "inset-line": "inset 0 0 0 1px rgba(255, 255, 255, 0.6)",
       },
       backgroundImage: {
@@ -207,9 +234,9 @@ const config: Config = {
           "100%": { transform: "translateX(100%)" },
         },
         "pulse-ring": {
-          "0%": { boxShadow: "0 0 0 0 rgba(29, 181, 132, 0.45)" },
-          "70%": { boxShadow: "0 0 0 12px rgba(29, 181, 132, 0)" },
-          "100%": { boxShadow: "0 0 0 0 rgba(29, 181, 132, 0)" },
+          "0%": { boxShadow: "0 0 0 0 rgba(198, 167, 107, 0.45)" },
+          "70%": { boxShadow: "0 0 0 12px rgba(198, 167, 107, 0)" },
+          "100%": { boxShadow: "0 0 0 0 rgba(198, 167, 107, 0)" },
         },
         /* Marquee: the track holds two identical sets, so -50% lands exactly
            on the start of the duplicate — a seamless loop with no reset jump. */

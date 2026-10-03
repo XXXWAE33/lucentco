@@ -9,3 +9,6 @@ export { AnnouncementBar } from "./announcement-bar";
 export { WhatsAppLink, CallLink, WhatsAppIcon } from "./contact-link";
 /* Plain module — safe to import from server AND client components. */
 export { darkContactPillClass } from "./pill-styles";
+export { VeloraWordmark, VeloraRing, VELORA_GOLD, VELORA_GOLD_DEEP } from "./velora-wordmark";
+export { PageHero } from "./page-hero";
+export { BrandPlaceholder } from "./brand-placeholder";

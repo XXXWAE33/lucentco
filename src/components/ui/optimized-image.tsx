@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { BrandPlaceholder } from "@/components/layout/brand-placeholder";
 
 /**
  * Responsive image wrapper.
@@ -61,7 +62,7 @@ export function OptimizedImage({
   placeholderIcon,
 }: OptimizedImageProps) {
   return (
-    <div className={cn("relative overflow-hidden rounded-card bg-sage-100", className)}>
+    <div className={cn("relative overflow-hidden rounded-card bg-sage-900", className)}>
       <div className={cn("relative w-full", aspect)}>
         {available ? (
           <Image
@@ -76,18 +77,7 @@ export function OptimizedImage({
             className={cn("object-cover", imageClassName)}
           />
         ) : (
-          <div
-            role="img"
-            aria-label={alt ? `Placeholder image — ${alt}` : undefined}
-            aria-hidden={alt ? undefined : true}
-            className="img-placeholder flex h-full w-full items-center justify-center"
-          >
-            {placeholderIcon && (
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/60 text-sage-600 shadow-soft">
-                {placeholderIcon}
-              </span>
-            )}
-          </div>
+          <BrandPlaceholder label={alt || undefined} icon={placeholderIcon} />
         )}
       </div>
     </div>

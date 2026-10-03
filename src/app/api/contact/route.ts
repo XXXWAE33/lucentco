@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   try {
     const resend = new Resend(apiKey);
     await resend.emails.send({
-      from: `${site.name} <enquiries@lucentcleanco.com.au>`,
+      from: `${site.name} <contact@velorabrisbane.com>`,
       to: process.env.CONTACT_TO_EMAIL ?? site.email,
       reply_to: email,
       subject: `New enquiry from ${name}${body.suburb ? ` (${body.suburb})` : ""}`,

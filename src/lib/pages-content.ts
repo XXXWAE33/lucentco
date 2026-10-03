@@ -32,6 +32,6 @@ export const faqs: { q: string; a: string }[] = [
   },
   {
     q: "Are you insured?",
-    a: "Yes — Lucent Clean Co. carries $20M public liability insurance and every cleaner is police-checked and fully insured.",
+    a: "Yes — Velora Cleaning Brisbane carries $20M public liability insurance and every cleaner is police-checked and fully insured.",
   },
 ];

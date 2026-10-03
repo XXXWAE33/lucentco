@@ -21,11 +21,8 @@ const pillIcons: Record<ConfidencePill["icon"], LucideIcon> = {
 };
 
 /**
- * Section two — sits inside its own rounded container card resting ON the
- * shared gradient wash.
- *
- * NO background-color on the <section>. The colour behind this card comes from
- * `<Atmosphere>` on the wrapper in `app/page.tsx`.
+ * Section two — sits inside its own rounded container card on the page's
+ * white background.
  *
  * Depth comes from deliberate layer breaks, not from shadows alone:
  *   z-0  card + rings  →  z-10 content  →  z-20 mock (breaks the card's right
@@ -123,7 +120,7 @@ export function BookWithConfidence() {
                       <span className="h-2.5 w-2.5 rounded-full bg-ink-200" />
                     </div>
                     <div className="mx-auto rounded-full bg-white px-4 py-1 text-[0.6875rem] text-muted-foreground">
-                      lucentcleanco.com.au/pricing
+                      velorabrisbane.com/pricing
                     </div>
                   </div>
 
@@ -176,7 +173,7 @@ export function BookWithConfidence() {
                   clean, square stacked pair instead.
                 */}
                 <div className="relative z-30 mt-4 rounded-3xl bg-sage-900 p-5 text-mint-100 shadow-[0_8px_16px_rgba(38,56,41,0.12),0_28px_56px_-20px_rgba(38,56,41,0.45)] ring-1 ring-inset ring-white/10 sm:absolute sm:-bottom-10 sm:-left-10 sm:mt-0 sm:w-64 sm:-rotate-[3.5deg] lg:-left-16">
-                  <p className="text-xs text-mint-200/70">Running total</p>
+                  <p className="text-xs text-mint-200/85">Running total</p>
                   <p className="mt-1 font-display text-3xl font-semibold tabular-nums text-white">
                     {formatAud(basket.subtotal)}
                   </p>
@@ -184,7 +181,7 @@ export function BookWithConfidence() {
                     <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
                     Confirmed before we start
                   </p>
-                  <div className="mt-4 flex items-center gap-2 border-t border-white/10 pt-3 text-xs text-mint-200/70">
+                  <div className="mt-4 flex items-center gap-2 border-t border-white/10 pt-3 text-xs text-mint-200/85">
                     <Phone className="h-3.5 w-3.5 shrink-0" />
                     Or call and we&apos;ll quote it
                   </div>

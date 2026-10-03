@@ -15,7 +15,7 @@ export function EcoImpact() {
           </>
         }
         title="The impact of choosing eco"
-        intro="Every Lucent clean swaps harsh chemicals for plant-based products and water-wise methods. Here's what our crews have saved Brisbane so far this year."
+        intro="Every Velora clean swaps harsh chemicals for plant-based products and water-wise methods. Here's what our crews have saved Brisbane so far this year."
         align="center"
       />
 

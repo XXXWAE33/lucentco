@@ -21,7 +21,7 @@ import { serviceIcons } from "../service-showcase/service-icons";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type Selection = {
+export type Selection = {
   serviceId: ServiceId;
   modeId: string;
   quantity: number;
@@ -29,7 +29,7 @@ type Selection = {
 };
 
 /** Sensible starting state whenever the service changes. */
-function initFor(serviceId: ServiceId): Selection {
+export function initFor(serviceId: ServiceId): Selection {
   const service = getService(serviceId);
   const mode = service.modes[0];
   const p = mode.pricing;
@@ -54,10 +54,15 @@ function initFor(serviceId: ServiceId): Selection {
  * with /pricing or the basket. Quote-only services (blinds, flood) are
  * deliberately excluded — they route to a call instead, below.
  */
-export function PricingSelector() {
+export function PricingSelector({
+  initialService = "carpet",
+}: {
+  /** Service to open on — set when launched from a specific service tile. */
+  initialService?: ServiceId;
+} = {}) {
   const reduce = useReducedMotion();
   const priced = services.filter((s) => !isQuoteOnly(s.id));
-  const [sel, setSel] = useState<Selection>(() => initFor("carpet"));
+  const [sel, setSel] = useState<Selection>(() => initFor(initialService));
 
   const service = getService(sel.serviceId);
   const mode = service.modes.find((m) => m.id === sel.modeId) ?? service.modes[0];
@@ -304,7 +309,7 @@ function quantityOptions(pricing: ServiceDef["modes"][number]["pricing"]): numbe
 }
 
 /** Spec rows built from the pricing model — never hardcoded. */
-function specRows(
+export function specRows(
   service: ServiceDef,
   pricing: ServiceDef["modes"][number]["pricing"],
   note: string,

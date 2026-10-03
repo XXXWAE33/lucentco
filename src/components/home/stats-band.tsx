@@ -19,7 +19,7 @@ export function StatsBand() {
                     <span className="text-emerald-400">{stat.suffix}</span>
                   </div>
                   <p className="mt-2 font-medium text-mint-100">{stat.label}</p>
-                  <p className="mt-0.5 text-sm text-mint-200/70">{stat.detail}</p>
+                  <p className="mt-0.5 text-sm text-mint-200/85">{stat.detail}</p>
                 </RevealItem>
               );
             })}

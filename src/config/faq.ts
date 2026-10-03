@@ -75,7 +75,7 @@ export const faqs: FaqItem[] = [
     id: "insured",
     category: "General",
     q: "Are you insured?",
-    a: "Yes — Lucent Clean Co. is fully insured and our technicians are trained and certified.",
+    a: "Yes — Velora Cleaning Brisbane is fully insured and our technicians are trained and certified.",
     // TODO(client): supply insurer, policy number and the certifying body. This
     // is a legal claim; publishing it unsubstantiated is a real exposure.
     verified: false,

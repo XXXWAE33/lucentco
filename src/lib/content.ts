@@ -47,7 +47,7 @@ export const features: Feature[] = [
   },
   {
     icon: "sparkles",
-    title: "The Lucent finish",
+    title: "The Velora finish",
     body: "A 60-point quality check on every visit, because 'clean enough' isn't the standard we built this on.",
   },
   {

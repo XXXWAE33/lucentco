@@ -39,7 +39,7 @@ export default function ServicesPage() {
             <span className="eyebrow">Our services</span>
             <h1 className="mt-4 text-fluid-h1 font-semibold">
               Specialist cleaning, done the{" "}
-              <span className="text-gradient">Lucent way</span>
+              <span className="text-gradient">Velora way</span>
             </h1>
             <p className="mt-5 text-pretty text-lg text-muted-foreground">
               Carpets, couches, mattresses, curtains and blinds — plus emergency

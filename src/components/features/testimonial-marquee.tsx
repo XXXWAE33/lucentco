@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Quote, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   testimonialRows,
@@ -48,7 +48,7 @@ export function TestimonialMarquee() {
       {allPlaceholders && (
         <DevWarning
           message={
-            "[Lucent] Testimonials are placeholders — replace them in " +
+            "[Velora] Testimonials are placeholders — replace them in " +
             "src/config/testimonials.ts and set placeholder: false before launch."
           }
         />
@@ -105,47 +105,70 @@ function MarqueeRow({
   );
 }
 
+const SERVICE_LABELS: Record<string, string> = {
+  carpet: "Carpet",
+  couch: "Couch",
+  mattress: "Mattress",
+  curtain: "Curtains",
+  blind: "Blinds",
+  "flood-damage": "Water damage",
+};
+
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
-  const { rating, quote, name, suburb } = testimonial;
+  const { rating, quote, name, suburb, service } = testimonial;
+  const initial = name.replace(/[^A-Za-z]/g, "").charAt(0).toUpperCase() || "•";
 
   return (
     <figure
       className={cn(
-        "flex h-full w-[17rem] flex-col justify-between rounded-3xl border border-border bg-card p-5 shadow-soft sm:w-[21rem] sm:p-6",
+        "group relative flex h-full w-[17rem] flex-col justify-between overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-soft transition-colors duration-300 hover:border-gold-300 sm:w-[21rem] sm:p-6",
         // Fixed min-height keeps rows aligned and CLS at zero.
-        "min-h-[13rem]",
+        "min-h-[14rem]",
       )}
     >
-      <div>
-        <div
-          className="flex gap-0.5"
-          aria-label={`${rating} out of 5 stars`}
-          role="img"
-        >
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              aria-hidden="true"
-              className={cn(
-                "h-4 w-4",
-                i < rating
-                  ? "fill-amber-400 text-amber-400"
-                  : "fill-ink-200 text-ink-200",
-              )}
-            />
-          ))}
+      {/* Oversized gold quote mark */}
+      <Quote
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 top-4 h-10 w-10 rotate-180 fill-gold-100 text-gold-200 transition-colors duration-300 group-hover:fill-gold-200 group-hover:text-gold-300"
+      />
+
+      <div className="relative">
+        <div className="flex">
+          <div className="flex gap-0.5" aria-label={`${rating} out of 5 stars`} role="img">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                aria-hidden="true"
+                className={cn(
+                  "h-4 w-4",
+                  i < rating ? "fill-gold-400 text-gold-400" : "fill-ink-200 text-ink-200",
+                )}
+              />
+            ))}
+          </div>
         </div>
 
-        <blockquote className="mt-3 text-pretty text-sm leading-relaxed text-ink-700">
+        <blockquote className="mt-3 text-pretty text-sm leading-relaxed text-ink-700 sm:text-[0.9375rem]">
           {quote}
         </blockquote>
       </div>
 
-      <figcaption className="mt-5 border-t border-border pt-4">
-        <div className="truncate text-sm font-semibold text-foreground">
-          {name}
-        </div>
-        <div className="truncate text-xs text-muted-foreground">{suburb}</div>
+      <figcaption className="relative mt-5 flex items-center gap-3 border-t border-border pt-4">
+        <span
+          aria-hidden="true"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sage-900 font-display text-sm font-semibold text-gold-300"
+        >
+          {initial}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-semibold text-foreground">{name}</span>
+          <span className="block truncate text-xs text-muted-foreground">{suburb}</span>
+        </span>
+        {SERVICE_LABELS[service] && (
+          <span className="shrink-0 rounded-full bg-gold-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-gold-700 ring-1 ring-inset ring-gold-200">
+            {SERVICE_LABELS[service]}
+          </span>
+        )}
       </figcaption>
     </figure>
   );

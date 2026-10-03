@@ -1,9 +1,7 @@
 ﻿import type { Metadata } from "next";
 import {
-  Atmosphere,
   Hero,
   BookWithConfidence,
-  ServicesOverview,
   WhyLucent,
   HowItWorks,
   QuoteJourney,
@@ -25,27 +23,8 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      {/*
-        1 + 2 share ONE atmospheric wash.
-
-        `<Atmosphere>` is positioned against this wrapper, not against either
-        section, so the gradient crosses the section boundary and nothing paints
-        at that edge — which is what removes the horizontal banding. Neither
-        child may set its own background-color.
-
-        `isolate` creates the stacking context the z-layers are declared in.
-        `overflow-x-clip` (not `hidden`) contains the hero visual's right-edge
-        bleed without creating a scroll container, and leaves overflow-y visible
-        so the visual can still crop past the top of the viewport.
-      */}
-      <div className="relative isolate overflow-x-clip">
-        <Atmosphere />
-        <Hero />
-        <BookWithConfidence />
-      </div>
-
-      {/* 3 — Services */}
-      <ServicesOverview />
+      <Hero />
+      <BookWithConfidence />
 
       {/* 3b — Why Lucent (verified-only trust cards + service pills) */}
       <WhyLucent />

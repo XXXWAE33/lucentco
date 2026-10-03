@@ -34,7 +34,7 @@ export function WhyLucent() {
   return (
     <Section className="bg-sage-50/60">
       <SectionHeading
-        eyebrow="Why Lucent"
+        eyebrow="Why Velora"
         title="Fixed prices. No surprises."
         intro="The two things every job is built around."
         align="center"
